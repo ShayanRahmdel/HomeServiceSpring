@@ -5,6 +5,7 @@ package com.shayanr.HomeServiceSpring.entity.users;
 
 import com.shayanr.HomeServiceSpring.entity.business.Address;
 import com.shayanr.HomeServiceSpring.entity.business.Comment;
+import com.shayanr.HomeServiceSpring.entity.business.Order;
 import com.shayanr.HomeServiceSpring.entity.business.Wallet;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -34,6 +35,9 @@ public class Customer extends User {
 
     @OneToMany(mappedBy = "customer")
     private List<Address> addresses;
+
+    @OneToMany(mappedBy = "customer")
+    private List<Order> orders;
 
     @Override
     public String toString() {
