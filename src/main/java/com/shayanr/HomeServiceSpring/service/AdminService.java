@@ -36,7 +36,7 @@ public interface AdminService   {
 
     void removeExpert(Integer expertId);
 
-    void updateSubDuty(Integer subDutyId,String newDescription,Double newBasePrice);
+    void updateSubDuty(Integer subDutyId,String newTitle,String newDescription,Double newBasePrice);
 
     List<SubDuty> seeSubDutyByCategory(Integer category);
     void deleteDutyCategory(Integer dutyCategoryId);
