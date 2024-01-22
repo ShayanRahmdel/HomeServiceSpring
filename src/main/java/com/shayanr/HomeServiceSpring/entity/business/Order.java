@@ -3,6 +3,7 @@ package com.shayanr.HomeServiceSpring.entity.business;
 
 
 import com.shayanr.HomeServiceSpring.entity.enumration.OrderStatus;
+import com.shayanr.HomeServiceSpring.entity.users.Customer;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -34,6 +35,9 @@ public class Order  {
 
     @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;
+
+    @ManyToOne
+    private Customer customer;
 
     @ManyToOne(fetch = FetchType.EAGER)
     private SubDuty subDuty;
