@@ -10,6 +10,5 @@ import java.util.List;
 
 public interface WorkSuggestionRepository extends JpaRepository<WorkSuggestion,Integer> {
 
-    @Query("SELECT w FROM WorkSuggestion w JOIN w.order o WHERE o.customer.id = :customerId")
-    List<WorkSuggestion> seeWorkSuggestions(@Param("customerId")Integer customerId);
+
 }
