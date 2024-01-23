@@ -6,6 +6,7 @@ import com.shayanr.HomeServiceSpring.entity.business.Order;
 import com.shayanr.HomeServiceSpring.entity.business.WorkSuggestion;
 import com.shayanr.HomeServiceSpring.entity.users.Customer;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,6 +26,16 @@ public interface CustomerService {
 
     Address createAddress(Address address, Integer customerId, Integer orderId);
 
-    List<WorkSuggestion> seeWorkSuggestions(Integer customerId);
+    List<WorkSuggestion> seeSuggestionsByPrice(Integer customerId);
+    List<WorkSuggestion> seeSuggestionsByExpertScore(Integer customerId);
+
+
+    void acceptSuggest(Integer suggestId);
+
+    void updateOrderToBegin(Integer orderId, Integer suggestionId, LocalDate date);
+
+    void updateOrderToEnd(Integer orderId);
+
+
 
 }
