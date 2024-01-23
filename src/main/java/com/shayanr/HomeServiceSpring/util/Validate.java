@@ -2,6 +2,8 @@ package com.shayanr.HomeServiceSpring.util;
 
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.regex.Pattern;
 @Component
 public class Validate {
@@ -73,4 +75,16 @@ public class Validate {
         return true;
     }
 
+
+    public static Boolean isValidDateAndTime(LocalDate date, LocalTime time){
+
+        if (date.isBefore(LocalDate.now()) ) {
+            System.out.println("Your date is before");
+            return false;
+        }else if (date.equals(LocalDate.now())&& time.isBefore(LocalTime.now())){
+            System.out.println("Your time is before");
+            return false;
+        }
+        return true;
+    }
 }
