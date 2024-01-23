@@ -56,6 +56,7 @@ public class Expert extends User {
         return  "Epert id " + getId()+"\n"+
                 "Expert name " + getFirstName()+" "+ getLastName()+"\n"+
                 "Expert email " + getEmail() +"\n"+
-                "Expert password " + getPassword();
+                "Expert password " + getPassword() +"\n"+
+                "OverallScore  " + getOverallScore() +"\n";
     }
 }
