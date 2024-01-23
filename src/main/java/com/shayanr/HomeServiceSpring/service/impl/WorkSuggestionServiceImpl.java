@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -28,6 +29,14 @@ public class WorkSuggestionServiceImpl implements WorkSuggestionService {
     }
 
     @Override
+    public Optional<WorkSuggestion> findById(Integer workSuggestionId) {
+        if (workSuggestionId == null) {
+            throw new NullPointerException("Null work suggestion id");
+        }
+        return workSuggestionRepository.findById(workSuggestionId);
+    }
+
+    @Override
     @Transactional
     public void deleteById(Integer workSuggestionId) {
             if (workSuggestionId==null){
@@ -36,14 +45,5 @@ public class WorkSuggestionServiceImpl implements WorkSuggestionService {
             workSuggestionRepository.deleteById(workSuggestionId);
     }
 
-    @Override
-    public List<WorkSuggestion> seeSuggestions(Integer customerId) {
-        try {
-            List<WorkSuggestion> workSuggestions = workSuggestionRepository.seeWorkSuggestions(customerId);
-            return workSuggestions;
-        }catch (NullPointerException | PersistenceException e){
-            System.out.println("error");
-        }
-        return null;
-    }
+
 }
