@@ -30,7 +30,6 @@ public class CustomerServiceImpl implements CustomerService {
 
     private final WorkSuggestionService workSuggestionService;
 
-    private final Validate  validate;
 
     private final DutyCategoryService dutyCategoryService;
     private final SubDutyService subDutyService;
@@ -155,13 +154,74 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public List<WorkSuggestion> seeWorkSuggestions(Integer customerId) {
+    public List<WorkSuggestion> seeSuggestionsByPrice(Integer customerId) {
         try {
-            return workSuggestionService.seeSuggestions(customerId);
+            return customerRepository.seeSuggestionsByPrice(customerId);
         }catch (NullPointerException | InvalidDataAccessApiUsageException e){
-            System.out.println("Error: ");
+            System.out.println("Error:");
         }
         return null;
+
+    }
+
+    @Override
+    public List<WorkSuggestion> seeSuggestionsByExpertScore(Integer customerId) {
+        try {
+            return customerRepository.seeSuggestionsByExpertScore(customerId);
+        }catch (NullPointerException | InvalidDataAccessApiUsageException e){
+            System.out.println("Error:");
+        }
+        return null;
+    }
+
+    @Override
+    @Transactional
+    public void acceptSuggest(Integer suggestId) {
+        try {
+            WorkSuggestion workSuggestion = workSuggestionService.findById(suggestId).orElse(null);
+            assert workSuggestion != null;
+            Order order = workSuggestion.getOrder();
+            order.setOrderStatus(OrderStatus.WAITING_FOR_THE_SPECIALIST_TO_COME);
+            orderService.saveOrder(order);
+        }catch (NullPointerException | IllegalArgumentException e){
+            System.out.println(e.getMessage());
+        }
+    }
+
+    @Override
+    @Transactional
+    public void updateOrderToBegin(Integer orderId, Integer suggestionId, LocalDate date) {
+        Order order = orderService.findById(orderId);
+        WorkSuggestion workSuggestion = workSuggestionService.findById(suggestionId).orElse(null);
+        try {
+            if (order == null) {
+                throw new NullPointerException("orderId cannot be null");
+            }
+            assert workSuggestion != null;
+            if (date.isBefore(workSuggestion.getSuggestedDate())){
+                throw new IllegalArgumentException("Date is before " + workSuggestion.getSuggestedDate());
+            }
+            order.setOrderStatus(OrderStatus.WORK_BEING);
+            orderService.saveOrder(order);
+        }catch (NullPointerException | IllegalArgumentException e){
+            System.out.println(e.getMessage());
+        }
+
+    }
+
+    @Override
+    @Transactional
+    public void updateOrderToEnd(Integer orderId) {
+        Order order = orderService.findById(orderId);
+        try {
+            if(order==null){
+                throw new NullPointerException("orderId cannot be null");
+            }
+            order.setOrderStatus(OrderStatus.WORK_DONE);
+            orderService.saveOrder(order);
+        }catch (NullPointerException e){
+            System.out.println(e.getMessage());
+        }
 
     }
 
