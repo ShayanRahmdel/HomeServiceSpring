@@ -1,7 +1,6 @@
 package com.shayanr.HomeServiceSpring.service.impl;
 
 
-
 import com.shayanr.HomeServiceSpring.entity.business.SubDuty;
 import com.shayanr.HomeServiceSpring.repositoy.SubDutyRepository;
 import com.shayanr.HomeServiceSpring.service.SubDutyService;
@@ -28,7 +27,7 @@ public class SubDutyServiceImpl implements SubDutyService {
     public SubDuty save(SubDuty subDuty) {
         try {
             subDutyRepository.save(subDuty);
-        }catch (NullPointerException | PersistenceException e){
+        } catch (NullPointerException | PersistenceException e) {
             System.out.println("Error saving subDuty");
         }
         return subDuty;
@@ -37,7 +36,7 @@ public class SubDutyServiceImpl implements SubDutyService {
     @Override
     @Transactional
     public void deleteById(Integer subDutyId) {
-        if (subDutyId==null){
+        if (subDutyId == null) {
             throw new NullPointerException("cant find subduty");
         }
         subDutyRepository.deleteById(subDutyId);
@@ -45,25 +44,26 @@ public class SubDutyServiceImpl implements SubDutyService {
 
     @Override
     public SubDuty findById(Integer subDutyId) {
-        if (subDutyId==null){
+        SubDuty subDuty = subDutyRepository.findById(subDutyId).orElse(null);
+        if (subDuty == null) {
             throw new NullPointerException("cant find subduty");
         }
-        return subDutyRepository.findById(subDutyId).orElse(null);
+        return subDuty;
 
 
     }
 
     @Override
     public List<SubDuty> findAll() {
-       return subDutyRepository.findAll();
+        return subDutyRepository.findAll();
     }
 
     @Override
     public List<SubDuty> seeSubDutyByCategory(Integer category) {
         List<SubDuty> subDutyList = new ArrayList<>();
         Collection<SubDuty> allSubDuty = subDutyRepository.findAll();
-        for (SubDuty subDuty : allSubDuty){
-            if (Objects.equals(subDuty.getDutyCategory().getId(), category)){
+        for (SubDuty subDuty : allSubDuty) {
+            if (Objects.equals(subDuty.getDutyCategory().getId(), category)) {
                 subDutyList.add(subDuty);
             }
 

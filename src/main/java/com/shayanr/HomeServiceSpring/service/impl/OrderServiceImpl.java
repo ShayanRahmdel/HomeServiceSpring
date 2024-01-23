@@ -30,10 +30,11 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Order findById(Integer orderId) {
-        if (orderId==null){
+        Order order = orderRepository.findById(orderId).orElse(null);
+        if (order==null){
             throw new NullPointerException("cant find order");
         }
-        return orderRepository.findById(orderId).orElse(null);
+        return order;
 
     }
 

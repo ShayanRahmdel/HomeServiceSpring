@@ -81,15 +81,16 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     @Transactional
     public void changePassword(Integer customerId,String newPassword,String confirmPassword) {
+        Customer customer = customerRepository.findById(customerId).orElse(null);
+
         try {
-            if (customerId == null){
+            if (customer == null){
                 throw new NullPointerException("customerId not found");
             }
-            Customer customer = customerRepository.findById(customerId).orElse(null);
+
             if (!Validate.passwordValidation(newPassword) || !newPassword.equals(confirmPassword)){
                 throw new PersistenceException("Password not valid");
             }
-            assert customer != null;
             customer.setPassword(newPassword);
             customerRepository.save(customer);
         }catch (NullPointerException | PersistenceException e){
@@ -109,7 +110,7 @@ public class CustomerServiceImpl implements CustomerService {
                 throw new NullPointerException();
             }
 
-            if (!isValidDateAndTime(order.getWorkDate(), order.getTimeDate())) {
+            if (!Validate.isValidDateAndTime(order.getWorkDate(), order.getTimeDate())) {
                 throw new PersistenceException();
             }
                 if (!isValidPrice(subDuty,order.getProposedPrice())) {
@@ -226,17 +227,6 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
 
-    boolean isValidDateAndTime(LocalDate date, LocalTime time){
-
-        if (date.isBefore(LocalDate.now()) ) {
-            System.out.println("Your date is before");
-            return false;
-        }else if (date.equals(LocalDate.now())&& time.isBefore(LocalTime.now())){
-            System.out.println("Your time is before");
-            return false;
-        }
-        return true;
-    }
 
     boolean isValidPrice(SubDuty subDuty, Double price){
         Double basePrice = subDuty.getBasePrice();

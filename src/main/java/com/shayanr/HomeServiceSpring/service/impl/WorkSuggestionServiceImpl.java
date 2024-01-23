@@ -29,11 +29,12 @@ public class WorkSuggestionServiceImpl implements WorkSuggestionService {
     }
 
     @Override
-    public Optional<WorkSuggestion> findById(Integer workSuggestionId) {
-        if (workSuggestionId == null) {
-            throw new NullPointerException("Null work suggestion id");
+    public WorkSuggestion findById(Integer workSuggestionId) {
+        WorkSuggestion workSuggestion = workSuggestionRepository.findById(workSuggestionId).orElse(null);
+        if (workSuggestion == null) {
+            throw new NullPointerException("workSuggestion is null");
         }
-        return workSuggestionRepository.findById(workSuggestionId);
+        return workSuggestion;
     }
 
     @Override

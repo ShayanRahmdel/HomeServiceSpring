@@ -7,6 +7,7 @@ import com.shayanr.HomeServiceSpring.service.DutyCategoryService;
 import jakarta.persistence.PersistenceException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.bytecode.internal.bytebuddy.PrivateAccessorException;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;
 
@@ -32,19 +33,17 @@ public class DutyCategoryServiceImpl implements DutyCategoryService {
 
     @Override
     public DutyCategory findById(Integer dutyCategoryId) {
-        if (dutyCategoryId == null) {
+        DutyCategory dutyCategory = dutyCategoryRepository.findById(dutyCategoryId).orElse(null);
+        if (dutyCategory == null) {
             throw new NullPointerException("dutyCategoryId is null");
         }
-        return dutyCategoryRepository.findById(dutyCategoryId).orElse(null);
+        return dutyCategory;
 
     }
 
     @Override
     @Transactional
     public void deleteById(Integer dutyCategoryId) {
-        if (dutyCategoryId == null){
-            throw new NullPointerException("dutyCategoryId is null");
-        }
         dutyCategoryRepository.deleteById(dutyCategoryId);
     }
 
@@ -57,18 +56,22 @@ public class DutyCategoryServiceImpl implements DutyCategoryService {
     @Transactional
     public void updateDutyCategory(Integer dutyCategoryId, String newTitle) {
         List<DutyCategory> all = dutyCategoryRepository.findAll();
-        for (DutyCategory category : all) {
-            if (category.getTitle().equals(newTitle) || newTitle.isEmpty()){
-                throw new PersistenceException("Duplicate duty category or title empty");
+        try {
+            dutyCategoryRepository.findById(dutyCategoryId).orElseThrow(()->new NullPointerException("cant find dutycategory"));
+            for (DutyCategory category : all) {
+                if (category.getTitle().equals(newTitle) || newTitle.isEmpty()){
+                    throw new PersistenceException("Duplicate duty category or title empty");
+                }
             }
+
+            DutyCategory dutyCategory = dutyCategoryRepository.findById(dutyCategoryId).orElse(null);
+            assert dutyCategory != null;
+            dutyCategory.setTitle(newTitle);
+            dutyCategoryRepository.save(dutyCategory);
+        }catch (NullPointerException | PrivateAccessorException e){
+            System.out.println(e.getMessage());
         }
-        if (dutyCategoryId == null){
-            throw new NullPointerException("id is Null");
-        }
-        DutyCategory dutyCategory = dutyCategoryRepository.findById(dutyCategoryId).orElse(null);
-        assert dutyCategory != null;
-        dutyCategory.setTitle(newTitle);
-        dutyCategoryRepository.save(dutyCategory);
+
 
     }
 }

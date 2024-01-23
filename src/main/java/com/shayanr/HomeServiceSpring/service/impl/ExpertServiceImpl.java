@@ -42,7 +42,7 @@ public class ExpertServiceImpl implements ExpertService {
     public Expert save(Expert expert) {
         try {
             expertRepository.save(expert);
-        }catch (NullPointerException | PersistenceException e){
+        } catch (NullPointerException | PersistenceException e) {
             System.out.println("Error saving Expert");
         }
         return expert;
@@ -50,16 +50,17 @@ public class ExpertServiceImpl implements ExpertService {
 
     @Override
     public Expert findById(Integer expertId) {
-        if (expertId == null){
+        Expert expert = expertRepository.findById(expertId).orElse(null);
+        if (expert == null) {
             throw new NullPointerException("cant find expert");
         }
-        return expertRepository.findById(expertId).orElse(null);
+        return expert;
     }
 
     @Override
     @Transactional
     public void deleteById(Integer expertId) {
-        if (expertId == null){
+        if (expertId == null) {
             throw new NullPointerException("cant find expert");
         }
         expertRepository.deleteById(expertId);
@@ -89,7 +90,7 @@ public class ExpertServiceImpl implements ExpertService {
                 return expert;
 
             }
-        }catch (PersistenceException | NullPointerException e){
+        } catch (PersistenceException | NullPointerException e) {
             System.out.println("Error saving Expert");
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -98,22 +99,20 @@ public class ExpertServiceImpl implements ExpertService {
     }
 
     @Override
-    public void changePassword(Integer expertId,String newPassword,String confirmPassword) {
-        try {
-        if (expertId == null){
-            throw new NullPointerException("customerId not found");
-        }
+    public void changePassword(Integer expertId, String newPassword, String confirmPassword) {
         Expert expert = expertRepository.findById(expertId).orElse(null);
-        if (!Validate.passwordValidation(newPassword) || !newPassword.equals(confirmPassword)){
-            throw new PersistenceException("Password not valid");
-        }
 
+        try {
+            if (expert == null) {
+                throw new NullPointerException("customerId not found");
+            }
 
-            assert expert != null;
+            if (!Validate.passwordValidation(newPassword) || !newPassword.equals(confirmPassword)) {
+                throw new PersistenceException("Password not valid");
+            }
             expert.setPassword(newPassword);
             expertRepository.save(expert);
-        }
-        catch (PersistenceException | NullPointerException e){
+        } catch (PersistenceException | NullPointerException e) {
             System.out.println(e.getMessage());
         }
 
@@ -124,16 +123,15 @@ public class ExpertServiceImpl implements ExpertService {
         try {
             Expert expert = expertRepository.findById(expertId).orElse(null);
             assert expert != null;
-            if (expert.getConfirmation().equals(Confirmation.NEW)){
+            if (expert.getConfirmation().equals(Confirmation.NEW)) {
                 System.out.println("You cant see Orders yet");
             }
             return orderService.seeOrders(expertId);
-        }catch (PersistenceException | NullPointerException e){
+        } catch (PersistenceException | NullPointerException e) {
             System.out.println(e.getMessage());
         }
         return null;
     }
-
 
 
     @Override
@@ -145,26 +143,26 @@ public class ExpertServiceImpl implements ExpertService {
             System.out.println("Image saved successfully.");
         } catch (IOException e) {
             System.out.println("Failed to save the image: " + e.getMessage());
-        }catch (NullPointerException e){
+        } catch (NullPointerException e) {
             System.out.println("cant find id");
         }
 
     }
 
     @Override
-    public WorkSuggestion createSuggest(WorkSuggestion workSuggestion,Integer orderId,Integer expertId) {
+    public WorkSuggestion createSuggest(WorkSuggestion workSuggestion, Integer orderId, Integer expertId) {
         List<Order> orders = seeOrder(expertId);
         Order order = orderService.findById(orderId);
         Expert expert = expertRepository.findById(expertId).orElse(null);
 
         try {
-            if (orders.isEmpty()|| expertId==null){
+            if (orders.isEmpty() || expert == null) {
                 throw new NullPointerException("wrong expert id or empty order");
             }
-            if (workSuggestion.getSuggestedPrice()<order.getSubDuty().getBasePrice()){
+            if (workSuggestion.getSuggestedPrice() < order.getSubDuty().getBasePrice()) {
                 throw new PersistenceException("your suggestion price is low");
             }
-            if (!isValidDateAndTime(workSuggestion.getSuggestedDate(),workSuggestion.getSuggestedBeginTime())){
+            if (!Validate.isValidDateAndTime(workSuggestion.getSuggestedDate(), workSuggestion.getSuggestedBeginTime())) {
                 throw new PersistenceException("not vaild date");
             }
             workSuggestion.setExpert(expert);
@@ -172,23 +170,12 @@ public class ExpertServiceImpl implements ExpertService {
             workSuggestionService.save(workSuggestion);
             order.setOrderStatus(OrderStatus.WAITING_EXPERT_SELECTION);
             orderService.saveOrder(order);
-        }catch (NullPointerException | PersistenceException e){
+        } catch (NullPointerException | PersistenceException e) {
             System.out.println(e.getMessage());
         }
         return workSuggestion;
     }
 
-    boolean isValidDateAndTime(LocalDate date,LocalTime time){
-
-        if (date.isBefore(LocalDate.now())) {
-            System.out.println("Your date is before");
-            return false;
-        }else if (date.equals(LocalDate.now())&& time.isBefore(LocalTime.now())) {
-            System.out.println("Your time is before");
-            return false;
-        }
-        return true;
-    }
 
     private byte[] setImageToByte(File imageFile) throws IOException {
         return Files.readAllBytes(imageFile.toPath());
