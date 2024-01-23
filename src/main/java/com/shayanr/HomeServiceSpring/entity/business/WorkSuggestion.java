@@ -36,4 +36,14 @@ public class WorkSuggestion  {
     @ManyToOne(fetch = FetchType.EAGER)
     private Order order;
 
+    @Override
+    public String toString() {
+        return "WorkSuggestion" +"\n" +
+                "id " + id + "\n" +
+                "suggestedDate  " + suggestedDate +"\n" +
+                "suggestedBeginTime  " + suggestedBeginTime +"\n" +
+                "suggestedPrice " + suggestedPrice +"\n" +
+                "suggestedWorkTime " + suggestedWorkTime + "\n" +
+                "expert " + expert +"\n";
+    }
 }
