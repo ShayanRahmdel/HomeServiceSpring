@@ -12,6 +12,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Set;
 
@@ -49,6 +51,13 @@ public class Expert extends User {
             throw new IllegalArgumentException("Image size exceeds the limit of 300KB.");
         }
         this.image = image;
+    }public Expert(String firstName, String lastName, String email, String password, LocalDate signUpDate, LocalTime signUpTime) {
+        setFirstName(firstName);
+        setLastName(lastName);
+        setEmail(email);
+        setPassword(password);
+        setSignUpDate(signUpDate);
+        setSignUpTime(signUpTime);
     }
 
     @Override
