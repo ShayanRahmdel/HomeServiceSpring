@@ -74,4 +74,10 @@ public class DutyCategoryServiceImpl implements DutyCategoryService {
 
 
     }
+
+    @Override
+    @Transactional
+    public void deleteAll() {
+        dutyCategoryRepository.deleteAll();
+    }
 }

@@ -15,4 +15,6 @@ public interface DutyCategoryService {
 
     List<DutyCategory> findAll();
     void updateDutyCategory(Integer dutyCategoryId,String newTitle);
+
+    void deleteAll();
 }
