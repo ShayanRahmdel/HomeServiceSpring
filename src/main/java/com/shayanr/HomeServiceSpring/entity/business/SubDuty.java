@@ -35,10 +35,22 @@ public class SubDuty  {
     private Double basePrice;
 
     @ManyToMany
+    @JoinTable(
+            name = "subduty_expert",
+            joinColumns = @JoinColumn(name = "subduty_id"),
+            inverseJoinColumns = @JoinColumn(name = "expert_id")
+    )
     private Set<Expert> experts;
 
     @ManyToOne(fetch = FetchType.EAGER)
     private DutyCategory dutyCategory;
+
+
+    public SubDuty(String title, String description, Double basePrice) {
+        this.title = title;
+        this.description = description;
+        this.basePrice = basePrice;
+    }
 
     @Override
     public String toString() {
