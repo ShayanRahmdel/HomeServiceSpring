@@ -18,5 +18,7 @@ public interface SubDutyService {
 
     List<SubDuty> seeSubDutyByCategory(Integer category);
 
+    void deleteAll();
+
 
 }
