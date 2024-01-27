@@ -27,7 +27,7 @@ public class Comment {
     private Integer score=0;
 
     @OneToOne(mappedBy = "comment")
-    private Order order;
+    private CustomerOrder customerOrder;
 
     @ManyToOne(fetch = FetchType.EAGER)
     private Customer customer;
