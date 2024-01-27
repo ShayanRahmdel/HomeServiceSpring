@@ -1,5 +1,6 @@
 package com.shayanr.HomeServiceSpring.util;
 
+import com.shayanr.HomeServiceSpring.entity.business.CustomerOrder;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -69,6 +70,7 @@ public class Validate {
 
     public static Boolean cityValidation(String city){
         if (!Validate.isValidCity(city)) {
+
             System.out.println("enter valid city code");
             return false;
         }
@@ -82,6 +84,18 @@ public class Validate {
             System.out.println("Your date is before");
             return false;
         }else if (date.equals(LocalDate.now())&& time.isBefore(LocalTime.now())){
+            System.out.println("Your time is before");
+            return false;
+        }
+        return true;
+    }
+
+    public static Boolean isValidDateAndTimeForSuggest(LocalDate date, LocalTime time, CustomerOrder order){
+
+        if (date.isBefore(order.getWorkDate()) ) {
+            System.out.println("Your date is before");
+            return false;
+        }else if (date.equals(order.getWorkDate())&& time.isBefore(order.getTimeDate())){
             System.out.println("Your time is before");
             return false;
         }
