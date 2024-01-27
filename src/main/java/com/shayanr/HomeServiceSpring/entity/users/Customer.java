@@ -5,7 +5,7 @@ package com.shayanr.HomeServiceSpring.entity.users;
 
 import com.shayanr.HomeServiceSpring.entity.business.Address;
 import com.shayanr.HomeServiceSpring.entity.business.Comment;
-import com.shayanr.HomeServiceSpring.entity.business.Order;
+import com.shayanr.HomeServiceSpring.entity.business.CustomerOrder;
 import com.shayanr.HomeServiceSpring.entity.business.Wallet;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -13,7 +13,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
+import java.util.Objects;
 
 
 @Entity
@@ -37,7 +40,7 @@ public class Customer extends User {
     private List<Address> addresses;
 
     @OneToMany(mappedBy = "customer")
-    private List<Order> orders;
+    private List<CustomerOrder> customerOrders;
 
     @Override
     public String toString() {
@@ -45,5 +48,14 @@ public class Customer extends User {
                 "Customer name " + getFirstName()+" "+ getLastName()+"\n"+
                 "Customer email " + getEmail() +"\n"+
                 "Customer password " + getPassword();
+    }
+
+    public Customer(String firstName, String lastName, String email, String password, LocalDate signUpDate, LocalTime signUpTime) {
+        setFirstName(firstName);
+        setLastName(lastName);
+        setEmail(email);
+        setPassword(password);
+        setSignUpDate(signUpDate);
+        setSignUpTime(signUpTime);
     }
 }
