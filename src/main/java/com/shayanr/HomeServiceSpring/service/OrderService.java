@@ -1,19 +1,20 @@
 package com.shayanr.HomeServiceSpring.service;
 
 
-import com.shayanr.HomeServiceSpring.entity.business.Order;
-import org.springframework.data.repository.query.Param;
+import com.shayanr.HomeServiceSpring.entity.business.CustomerOrder;
 
 import java.util.List;
 
 public interface OrderService {
 
-    Order saveOrder(Order order);
+    CustomerOrder saveOrder(CustomerOrder customerOrder);
 
-    Order findById(Integer orderId);
+    CustomerOrder findById(Integer orderId);
 
     void deleteById(Integer orderId);
 
-    List<Order> seeOrders(Integer expertId);
+    List<CustomerOrder> seeOrders(Integer expertId);
+
+    void deleteAll();
 
 }
