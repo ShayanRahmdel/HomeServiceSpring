@@ -20,7 +20,7 @@ import java.util.List;
 @Setter
 @Getter
 @Table(name = "order_table")
-public class Order  {
+public class CustomerOrder {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -46,11 +46,21 @@ public class Order  {
     private Comment comment;
 
 
-    @OneToMany(mappedBy = "order")
+    @OneToMany(mappedBy = "customerOrder")
     private List<WorkSuggestion> workSuggestions;
+
 
     @OneToOne
     private Address address;
+
+
+    public CustomerOrder(Double proposedPrice, String jobDescription, LocalDate workDate, LocalTime timeDate) {
+        this.proposedPrice = proposedPrice;
+        this.jobDescription = jobDescription;
+        this.workDate = workDate;
+        this.timeDate = timeDate;
+
+    }
 
     @Override
     public String toString() {
