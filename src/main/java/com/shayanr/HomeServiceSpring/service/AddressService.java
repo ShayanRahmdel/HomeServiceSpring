@@ -7,4 +7,6 @@ public interface AddressService  {
 
 
     Address saveAddress(Address address);
+
+    void deleteAll();
 }

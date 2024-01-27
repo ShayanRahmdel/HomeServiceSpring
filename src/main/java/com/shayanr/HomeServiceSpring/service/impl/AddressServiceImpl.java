@@ -26,4 +26,9 @@ public class AddressServiceImpl implements AddressService {
         return address;
     }
 
+    @Override
+    public void deleteAll() {
+        addressRepository.deleteAll();
+    }
+
 }
