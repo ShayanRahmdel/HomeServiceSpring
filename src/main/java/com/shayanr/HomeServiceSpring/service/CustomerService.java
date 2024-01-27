@@ -2,7 +2,7 @@ package com.shayanr.HomeServiceSpring.service;
 
 
 import com.shayanr.HomeServiceSpring.entity.business.Address;
-import com.shayanr.HomeServiceSpring.entity.business.Order;
+import com.shayanr.HomeServiceSpring.entity.business.CustomerOrder;
 import com.shayanr.HomeServiceSpring.entity.business.WorkSuggestion;
 import com.shayanr.HomeServiceSpring.entity.users.Customer;
 
@@ -20,9 +20,9 @@ public interface CustomerService {
 
     Customer signUp(Customer customer);
 
-    void changePassword(Integer customerId,String newPassword,String confirmPassword);
+    Customer changePassword(Integer customerId,String newPassword,String confirmPassword);
 
-    Order createOrder(Order order, Integer category, Integer subDutyId, Integer customerId);
+    CustomerOrder createOrder(CustomerOrder customerOrder, Integer category, Integer subDutyId, Integer customerId);
 
     Address createAddress(Address address, Integer customerId, Integer orderId);
 
@@ -30,12 +30,12 @@ public interface CustomerService {
     List<WorkSuggestion> seeSuggestionsByExpertScore(Integer customerId);
 
 
-    void acceptSuggest(Integer suggestId);
+    CustomerOrder acceptSuggest(Integer suggestId);
 
-    void updateOrderToBegin(Integer orderId, Integer suggestionId, LocalDate date);
+    CustomerOrder updateOrderToBegin(Integer orderId, Integer suggestionId, LocalDate date);
 
-    void updateOrderToEnd(Integer orderId);
+    CustomerOrder updateOrderToEnd(Integer orderId);
 
-
+    void deleteAll();
 
 }
