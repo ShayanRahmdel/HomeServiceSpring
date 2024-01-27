@@ -46,5 +46,10 @@ public class WorkSuggestionServiceImpl implements WorkSuggestionService {
             workSuggestionRepository.deleteById(workSuggestionId);
     }
 
+    @Override
+    public void deleteAll() {
+        workSuggestionRepository.deleteAll();
+    }
+
 
 }

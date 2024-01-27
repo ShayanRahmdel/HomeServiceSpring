@@ -15,6 +15,8 @@ public interface WorkSuggestionService {
 
     void deleteById(Integer workSuggestionId);
 
+    void deleteAll();
+
 
 
 
