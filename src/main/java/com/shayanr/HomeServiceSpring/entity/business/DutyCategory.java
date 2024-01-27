@@ -26,7 +26,9 @@ public class DutyCategory  {
     @OneToMany(mappedBy = "dutyCategory")
     private List<SubDuty> subDuties;
 
-
+    public DutyCategory(String title) {
+        this.title = title;
+    }
 
     @Override
     public String toString() {
