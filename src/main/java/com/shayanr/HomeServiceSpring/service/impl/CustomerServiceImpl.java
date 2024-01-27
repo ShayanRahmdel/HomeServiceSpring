@@ -2,7 +2,7 @@ package com.shayanr.HomeServiceSpring.service.impl;
 
 
 import com.shayanr.HomeServiceSpring.entity.business.Address;
-import com.shayanr.HomeServiceSpring.entity.business.Order;
+import com.shayanr.HomeServiceSpring.entity.business.CustomerOrder;
 import com.shayanr.HomeServiceSpring.entity.business.SubDuty;
 import com.shayanr.HomeServiceSpring.entity.business.WorkSuggestion;
 import com.shayanr.HomeServiceSpring.entity.enumration.OrderStatus;
@@ -17,8 +17,6 @@ import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -63,24 +61,25 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     @Transactional
     public Customer signUp(Customer customer) {
-        try {
-            if (Validate.nameValidation(customer.getFirstName()) &&
-                    Validate.nameValidation(customer.getLastName()) &&
-                    Validate.emailValidation(customer.getEmail()) &&
-                    Validate.passwordValidation(customer.getPassword())) {
-                customerRepository.save(customer);
-                return customer;
+//        try {
+            if (!Validate.nameValidation(customer.getFirstName()) ||
+                    !Validate.nameValidation(customer.getLastName()) ||
+                    !Validate.emailValidation(customer.getEmail()) ||
+                    !Validate.passwordValidation(customer.getPassword())) {
+                throw new IllegalArgumentException();
             }
-        }catch (PersistenceException | NullPointerException e){
-            System.out.println("Error saving customer");
-        }
-        return customer;
+            customerRepository.save(customer);
+            return customer;
+//        }catch ( NullPointerException e){
+//            System.out.println("Error saving customer");
+//        }
+//        return customer;
 
     }
 
     @Override
     @Transactional
-    public void changePassword(Integer customerId,String newPassword,String confirmPassword) {
+    public Customer changePassword(Integer customerId,String newPassword,String confirmPassword) {
         Customer customer = customerRepository.findById(customerId).orElse(null);
 
         try {
@@ -93,16 +92,17 @@ public class CustomerServiceImpl implements CustomerService {
             }
             customer.setPassword(newPassword);
             customerRepository.save(customer);
+            return customer;
         }catch (NullPointerException | PersistenceException e){
             System.out.println(e.getMessage());
         }
-
+        return customer;
 
     }
 
     @Override
     @Transactional
-    public Order createOrder(Order order, Integer category, Integer subDutyId, Integer customerId) {
+    public CustomerOrder createOrder(CustomerOrder customerOrder, Integer category, Integer subDutyId, Integer customerId) {
         SubDuty subDuty = subDutyService.findById(subDutyId);
         Customer customer = customerRepository.findById(customerId).orElse(null);
         try {
@@ -110,24 +110,22 @@ public class CustomerServiceImpl implements CustomerService {
                 throw new NullPointerException();
             }
 
-            if (!Validate.isValidDateAndTime(order.getWorkDate(), order.getTimeDate())) {
+            if (!Validate.isValidDateAndTime(customerOrder.getWorkDate(), customerOrder.getTimeDate())) {
                 throw new PersistenceException();
             }
-                if (!isValidPrice(subDuty,order.getProposedPrice())) {
+                if (!isValidPrice(subDuty, customerOrder.getProposedPrice())) {
                     throw new PersistenceException();
                 }
 
-            order.setSubDuty(subDuty);
-            order.setCustomer(customer);
-            order.setComment(null);
-            order.setOrderStatus(OrderStatus.WAITING_EXPERT_SUGESTION);
-            order.setAddress(null);
-            orderService.saveOrder(order);
+            customerOrder.setSubDuty(subDuty);
+            customerOrder.setCustomer(customer);
+            customerOrder.setOrderStatus(OrderStatus.WAITING_EXPERT_SUGESTION);
+            orderService.saveOrder(customerOrder);
 
         }catch (PersistenceException | NullPointerException e) {
             System.out.println("Error: saving order:");
         }
-        return order;
+        return customerOrder;
 
     }
 
@@ -135,7 +133,7 @@ public class CustomerServiceImpl implements CustomerService {
     @Transactional
     public Address createAddress(Address address, Integer customerId, Integer orderId) {
         Customer customer = customerRepository.findById(customerId).orElse(null);
-        Order order = orderService.findById(orderId);
+        CustomerOrder customerOrder = orderService.findById(orderId);
         try {
             if (!Validate.cityValidation(address.getCity()) || !Validate.postalValidation(address.getPostalCode())
                     || !Validate.isValidCity(address.getState())) {
@@ -144,9 +142,9 @@ public class CustomerServiceImpl implements CustomerService {
             address.setCustomer(customer);
             addressService.saveAddress(address);
 
-            assert order != null;
-            order.setAddress(address);
-            orderService.saveOrder(order);
+            assert customerOrder != null;
+            customerOrder.setAddress(address);
+            orderService.saveOrder(customerOrder);
             return address;
         }catch (PersistenceException | NullPointerException e){
             System.out.println(e.getMessage());
@@ -177,55 +175,59 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     @Transactional
-    public void acceptSuggest(Integer suggestId) {
+    public CustomerOrder acceptSuggest(Integer suggestId) {
         try {
-            WorkSuggestion workSuggestion = workSuggestionService.findById(suggestId).orElse(null);
+            WorkSuggestion workSuggestion = workSuggestionService.findById(suggestId);
             assert workSuggestion != null;
-            Order order = workSuggestion.getOrder();
-            order.setOrderStatus(OrderStatus.WAITING_FOR_THE_SPECIALIST_TO_COME);
-            orderService.saveOrder(order);
+            CustomerOrder customerOrder = workSuggestion.getCustomerOrder();
+            customerOrder.setOrderStatus(OrderStatus.WAITING_FOR_THE_SPECIALIST_TO_COME);
+            orderService.saveOrder(customerOrder);
+            return customerOrder;
         }catch (NullPointerException | IllegalArgumentException e){
             System.out.println(e.getMessage());
         }
+        return null;
     }
 
     @Override
     @Transactional
-    public void updateOrderToBegin(Integer orderId, Integer suggestionId, LocalDate date) {
-        Order order = orderService.findById(orderId);
-        WorkSuggestion workSuggestion = workSuggestionService.findById(suggestionId).orElse(null);
+    public CustomerOrder updateOrderToBegin(Integer orderId, Integer suggestionId, LocalDate date) {
         try {
-            if (order == null) {
-                throw new NullPointerException("orderId cannot be null");
-            }
+            CustomerOrder customerOrder = orderService.findById(orderId);
+            WorkSuggestion workSuggestion = workSuggestionService.findById(suggestionId);
+
             assert workSuggestion != null;
             if (date.isBefore(workSuggestion.getSuggestedDate())){
                 throw new IllegalArgumentException("Date is before " + workSuggestion.getSuggestedDate());
             }
-            order.setOrderStatus(OrderStatus.WORK_BEING);
-            orderService.saveOrder(order);
+            customerOrder.setOrderStatus(OrderStatus.WORK_BEGIN);
+            orderService.saveOrder(customerOrder);
+            return customerOrder;
         }catch (NullPointerException | IllegalArgumentException e){
             System.out.println(e.getMessage());
         }
-
+    return null;
     }
 
     @Override
     @Transactional
-    public void updateOrderToEnd(Integer orderId) {
-        Order order = orderService.findById(orderId);
+    public CustomerOrder updateOrderToEnd(Integer orderId) {
         try {
-            if(order==null){
-                throw new NullPointerException("orderId cannot be null");
-            }
-            order.setOrderStatus(OrderStatus.WORK_DONE);
-            orderService.saveOrder(order);
+            CustomerOrder customerOrder = orderService.findById(orderId);
+            customerOrder.setOrderStatus(OrderStatus.WORK_DONE);
+            orderService.saveOrder(customerOrder);
+            return customerOrder;
         }catch (NullPointerException e){
             System.out.println(e.getMessage());
         }
-
+        return null;
     }
 
+    @Override
+    @Transactional
+    public void deleteAll() {
+        customerRepository.deleteAll();
+    }
 
 
     boolean isValidPrice(SubDuty subDuty, Double price){
