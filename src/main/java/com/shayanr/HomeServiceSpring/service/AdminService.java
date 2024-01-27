@@ -21,10 +21,10 @@ public interface AdminService   {
     List<DutyCategory> seeAllDutyCategories();
     List<SubDuty> seeAllSubDuty();
 
-    void addExpertInSubDuty(Integer expertId,Integer subDutyId);
+    Expert addExpertInSubDuty(Integer expertId,Integer subDutyId);
 
-    void confirmExpert(Integer expertId);
-    void removeExpertFromSubDuty(Integer expertId,Integer subDutyId);
+    Expert confirmExpert(Integer expertId);
+    Expert removeExpertFromSubDuty(Integer expertId,Integer subDutyId);
 
     boolean validateExpertOneDutyCategory(Expert expert,Integer newDutyCategory);
 
@@ -36,13 +36,11 @@ public interface AdminService   {
 
     void removeExpert(Integer expertId);
 
-    void updateSubDuty(Integer subDutyId,String newTitle,String newDescription,Double newBasePrice);
+    SubDuty updateSubDuty(Integer subDutyId,String newTitle,String newDescription,Double newBasePrice);
 
     List<SubDuty> seeSubDutyByCategory(Integer category);
-    void deleteDutyCategory(Integer dutyCategoryId);
 
-    void deleteSubDuty(Integer subDutyId);
 
-    void updateDutyCategory(Integer dutyCategoryId,String newTitle);
+    DutyCategory updateDutyCategory(Integer dutyCategoryId,String newTitle);
 
 }
