@@ -34,7 +34,14 @@ public class WorkSuggestion  {
     private Expert expert;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    private Order order;
+    private CustomerOrder customerOrder;
+
+    public WorkSuggestion(LocalDate suggestedDate, LocalTime suggestedBeginTime, Double suggestedPrice, String suggestedWorkTime) {
+        this.suggestedDate = suggestedDate;
+        this.suggestedBeginTime = suggestedBeginTime;
+        this.suggestedPrice = suggestedPrice;
+        this.suggestedWorkTime = suggestedWorkTime;
+    }
 
     @Override
     public String toString() {
