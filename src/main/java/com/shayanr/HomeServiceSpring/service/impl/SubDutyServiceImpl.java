@@ -71,4 +71,11 @@ public class SubDutyServiceImpl implements SubDutyService {
         return subDutyList;
 
     }
+
+    @Override
+    @Transactional
+    public void deleteAll() {
+        subDutyRepository.deleteAll();
+    }
+
 }
