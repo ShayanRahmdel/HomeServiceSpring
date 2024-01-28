@@ -139,10 +139,10 @@ class ExpertServiceImplTest {
     void changePasswordWithNotvalidpass() throws IOException {
         Expert expert = new Expert("Ali", "Alavi", "hasan@gmail.com", "Shayan1@",
                 LocalDate.now(), LocalTime.of(10, 0, 0));
-        expertService.signUp(expert,imageFile);
+        expertService.signUp(expert, imageFile);
 
         assertThrows(PersistenceException.class, () -> {
-           expertService.changePassword(expert.getId(),"123","123");
+            expertService.changePassword(expert.getId(), "123", "123");
         });
     }
 
@@ -150,7 +150,7 @@ class ExpertServiceImplTest {
     void notAcceptedExpertSeeOrder() throws IOException {
         Expert expert = new Expert("Ali", "Alavi", "hasan@gmail.com", "Shayan1@",
                 LocalDate.now(), LocalTime.of(10, 0, 0));
-        expertService.signUp(expert,imageFile);
+        expertService.signUp(expert, imageFile);
         Customer customer = new Customer("Shayan", "Rahmdel", "shayan@gmail.com",
                 "Shayan1@", LocalDate.now(), LocalTime.of(12, 0, 0));
         customerService.signUp(customer);
@@ -162,10 +162,11 @@ class ExpertServiceImplTest {
                 LocalDate.of(2025, 1, 1), LocalTime.of(10, 10, 10));
         customerService.createOrder(customerOrder, category.getId(), subDuty.getId(), customer.getId());
 
-        assertThrows(PersistenceException.class,()->{
-           expertService.seeOrder(expert.getId());
+        assertThrows(PersistenceException.class, () -> {
+            expertService.seeOrder(expert.getId());
         });
     }
+
     @Test
     void saveImageWithEmptyPath() throws IOException {
         String path = "";
@@ -175,7 +176,7 @@ class ExpertServiceImplTest {
 
 
         File imageFile = new File(path);
-        assertThrows(NullPointerException.class,()->{
+        assertThrows(NullPointerException.class, () -> {
             expertService.saveImage(path, expert.getId());
         });
     }
@@ -201,8 +202,8 @@ class ExpertServiceImplTest {
         WorkSuggestion workSuggestion = new WorkSuggestion(LocalDate.of(2025, 1, 3),
                 LocalTime.of(9, 10, 10), 110.0, "3days");
 
-        assertThrows(PersistenceException.class,()->{
-           expertService.createSuggest(workSuggestion,customerOrder.getId(),expert.getId());
+        assertThrows(PersistenceException.class, () -> {
+            expertService.createSuggest(workSuggestion, customerOrder.getId(), expert.getId());
         });
     }
 
@@ -228,8 +229,8 @@ class ExpertServiceImplTest {
         WorkSuggestion workSuggestion = new WorkSuggestion(LocalDate.of(2025, 1, 4),
                 LocalTime.of(9, 10, 10), 50.0, "3days");
 
-        assertThrows(PersistenceException.class,()->{
-            expertService.createSuggest(workSuggestion,customerOrder.getId(),expert.getId());
+        assertThrows(PersistenceException.class, () -> {
+            expertService.createSuggest(workSuggestion, customerOrder.getId(), expert.getId());
         });
     }
 
