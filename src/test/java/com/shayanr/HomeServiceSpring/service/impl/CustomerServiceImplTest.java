@@ -20,6 +20,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -48,7 +49,7 @@ class CustomerServiceImplTest {
     void signUp() {
         Customer customer = new Customer("Shayan", "Rahmdel", "shayan@gmail.com",
                 "Shayan1@", LocalDate.now(), LocalTime.of(12, 0, 0));
-        assertEquals(customer,customerService.signUp(customer));
+        assertEquals(customer, customerService.signUp(customer));
     }
 
     @Test
@@ -57,7 +58,7 @@ class CustomerServiceImplTest {
                 "Shayan1@", LocalDate.now(), LocalTime.of(12, 0, 0));
         customerService.signUp(customer);
         Customer customer1 = customerService.changePassword(customer.getId(), "Farzad1!", "Farzad1!");
-        assertEquals("Farzad1!",customer1.getPassword());
+        assertEquals("Farzad1!", customer1.getPassword());
     }
 
     @Test
@@ -71,7 +72,7 @@ class CustomerServiceImplTest {
         adminService.createSubDuty(subDuty, category.getId());
         CustomerOrder customerOrder = new CustomerOrder(200.0, "clean",
                 LocalDate.of(2025, 1, 1), LocalTime.of(10, 10, 10));
-        assertEquals(customerOrder,customerService.createOrder(customerOrder,category.getId(),subDuty.getId(),customer.getId()));
+        assertEquals(customerOrder, customerService.createOrder(customerOrder, category.getId(), subDuty.getId(), customer.getId()));
 
     }
 
@@ -86,9 +87,9 @@ class CustomerServiceImplTest {
         adminService.createSubDuty(subDuty, category.getId());
         CustomerOrder customerOrder = new CustomerOrder(200.0, "clean",
                 LocalDate.of(2025, 1, 1), LocalTime.of(10, 10, 10));
-        customerService.createOrder(customerOrder,category.getId(),subDuty.getId(),customer.getId());
-        Address address = new Address("tehran","tehran","sabalan","1615795517");
-        assertEquals(address,customerService.createAddress(address,customer.getId(),customerOrder.getId()));
+        customerService.createOrder(customerOrder, category.getId(), subDuty.getId(), customer.getId());
+        Address address = new Address("tehran", "tehran", "sabalan", "1615795517");
+        assertEquals(address, customerService.createAddress(address, customer.getId(), customerOrder.getId()));
 
 
     }
@@ -104,9 +105,9 @@ class CustomerServiceImplTest {
         adminService.createSubDuty(subDuty, category.getId());
         CustomerOrder customerOrder = new CustomerOrder(200.0, "clean",
                 LocalDate.of(2025, 1, 2), LocalTime.of(10, 10, 10));
-        customerService.createOrder(customerOrder,category.getId(),subDuty.getId(),customer.getId());
-        Address address = new Address("tehran","tehran","sabalan","1615795517");
-        customerService.createAddress(address,customer.getId(),customerOrder.getId());
+        customerService.createOrder(customerOrder, category.getId(), subDuty.getId(), customer.getId());
+        Address address = new Address("tehran", "tehran", "sabalan", "1615795517");
+        customerService.createAddress(address, customer.getId(), customerOrder.getId());
         Expert expert = new Expert("Ali", "Alavi", "hasan@gmail.com", "Shayan1@", LocalDate.now(),
                 LocalTime.of(10, 0, 0));
         expertService.signUp(expert, imageFile);
@@ -115,8 +116,8 @@ class CustomerServiceImplTest {
                 LocalTime.of(9, 10, 10), 100.0, "3days");
         WorkSuggestion workSuggestion1 = new WorkSuggestion(LocalDate.of(2025, 1, 4),
                 LocalTime.of(9, 10, 10), 200.0, "3days");
-        expertService.createSuggest(workSuggestion,customerOrder.getId(),expert.getId());
-        expertService.createSuggest(workSuggestion1,customerOrder.getId(),expert.getId());
+        expertService.createSuggest(workSuggestion, customerOrder.getId(), expert.getId());
+        expertService.createSuggest(workSuggestion1, customerOrder.getId(), expert.getId());
 
 
         List<WorkSuggestion> workSuggestions = customerService.seeSuggestionsByPrice(customer.getId());
@@ -139,14 +140,14 @@ class CustomerServiceImplTest {
         adminService.createSubDuty(subDuty, category.getId());
         CustomerOrder customerOrder = new CustomerOrder(200.0, "clean",
                 LocalDate.of(2025, 1, 2), LocalTime.of(10, 10, 10));
-        customerService.createOrder(customerOrder,category.getId(),subDuty.getId(),customer.getId());
-        Address address = new Address("tehran","tehran","sabalan","1615795517");
-        customerService.createAddress(address,customer.getId(),customerOrder.getId());
+        customerService.createOrder(customerOrder, category.getId(), subDuty.getId(), customer.getId());
+        Address address = new Address("tehran", "tehran", "sabalan", "1615795517");
+        customerService.createAddress(address, customer.getId(), customerOrder.getId());
         Expert expert = new Expert("Ali", "Alavi", "hasan@gmail.com", "Shayan1@", LocalDate.now(),
                 LocalTime.of(10, 0, 0));
         Expert expert1 = new Expert("Majid", "Alavi", "majid@gmail.com", "Shayan1@", LocalDate.now(),
                 LocalTime.of(10, 0, 0));
-        expertService.signUp(expert1,imageFile);
+        expertService.signUp(expert1, imageFile);
         expertService.signUp(expert, imageFile);
         expert.setOverallScore(10.0);
         expert1.setOverallScore(5.0);
@@ -158,15 +159,14 @@ class CustomerServiceImplTest {
                 LocalTime.of(9, 10, 10), 100.0, "3days");
         WorkSuggestion workSuggestion1 = new WorkSuggestion(LocalDate.of(2025, 1, 4),
                 LocalTime.of(9, 10, 10), 200.0, "3days");
-        expertService.createSuggest(workSuggestion,customerOrder.getId(),expert.getId());
-        expertService.createSuggest(workSuggestion1,customerOrder.getId(),expert1.getId());
+        expertService.createSuggest(workSuggestion, customerOrder.getId(), expert.getId());
+        expertService.createSuggest(workSuggestion1, customerOrder.getId(), expert1.getId());
 
         List<WorkSuggestion> workSuggestions = customerService.seeSuggestionsByPrice(customer.getId());
         WorkSuggestion firstworkSuggestion = workSuggestions.get(0);
 
-        assertEquals(10.0,firstworkSuggestion.getExpert().getOverallScore());
+        assertEquals(10.0, firstworkSuggestion.getExpert().getOverallScore());
     }
-
 
 
     @Test
@@ -184,13 +184,13 @@ class CustomerServiceImplTest {
         adminService.createSubDuty(subDuty, category.getId());
         CustomerOrder customerOrder = new CustomerOrder(200.0, "clean",
                 LocalDate.of(2025, 1, 2), LocalTime.of(10, 10, 10));
-        customerService.createOrder(customerOrder,category.getId(),subDuty.getId(),customer.getId());
+        customerService.createOrder(customerOrder, category.getId(), subDuty.getId(), customer.getId());
         WorkSuggestion workSuggestion = new WorkSuggestion(LocalDate.of(2025, 1, 4),
                 LocalTime.of(9, 10, 10), 100.0, "3days");
-        expertService.createSuggest(workSuggestion,customerOrder.getId(),expert.getId());
+        expertService.createSuggest(workSuggestion, customerOrder.getId(), expert.getId());
 
         CustomerOrder customerOrder1 = customerService.acceptSuggest(workSuggestion.getId());
-        assertEquals(OrderStatus.WAITING_FOR_THE_SPECIALIST_TO_COME,customerOrder1.getOrderStatus());
+        assertEquals(OrderStatus.WAITING_FOR_THE_SPECIALIST_TO_COME, customerOrder1.getOrderStatus());
 
 
     }
@@ -210,13 +210,14 @@ class CustomerServiceImplTest {
         adminService.createSubDuty(subDuty, category.getId());
         CustomerOrder customerOrder = new CustomerOrder(200.0, "clean",
                 LocalDate.of(2025, 1, 2), LocalTime.of(10, 10, 10));
-        customerService.createOrder(customerOrder,category.getId(),subDuty.getId(),customer.getId());
+        customerService.createOrder(customerOrder, category.getId(), subDuty.getId(), customer.getId());
         WorkSuggestion workSuggestion = new WorkSuggestion(LocalDate.of(2025, 1, 4),
                 LocalTime.of(9, 10, 10), 100.0, "3days");
-        expertService.createSuggest(workSuggestion,customerOrder.getId(),expert.getId());
+        expertService.createSuggest(workSuggestion, customerOrder.getId(), expert.getId());
         customerService.acceptSuggest(workSuggestion.getId());
-        CustomerOrder customerOrder1 = customerService.updateOrderToBegin(customerOrder.getId(), workSuggestion.getId(), LocalDate.of(2025, 1, 4));
-        assertEquals(OrderStatus.WORK_BEGIN,customerOrder1.getOrderStatus());
+        CustomerOrder customerOrder1 = customerService.updateOrderToBegin(customerOrder.getId(),
+                workSuggestion.getId(), LocalDate.of(2025, 1, 4));
+        assertEquals(OrderStatus.WORK_BEGIN, customerOrder1.getOrderStatus());
 
     }
 
@@ -235,16 +236,95 @@ class CustomerServiceImplTest {
         adminService.createSubDuty(subDuty, category.getId());
         CustomerOrder customerOrder = new CustomerOrder(200.0, "clean",
                 LocalDate.of(2025, 1, 2), LocalTime.of(10, 10, 10));
-        customerService.createOrder(customerOrder,category.getId(),subDuty.getId(),customer.getId());
+        customerService.createOrder(customerOrder, category.getId(), subDuty.getId(), customer.getId());
         WorkSuggestion workSuggestion = new WorkSuggestion(LocalDate.of(2025, 1, 4),
                 LocalTime.of(9, 10, 10), 100.0, "3days");
-        expertService.createSuggest(workSuggestion,customerOrder.getId(),expert.getId());
+        expertService.createSuggest(workSuggestion, customerOrder.getId(), expert.getId());
         customerService.acceptSuggest(workSuggestion.getId());
         customerService.updateOrderToBegin(customerOrder.getId(), workSuggestion.getId(), LocalDate.of(2025, 1, 4));
         CustomerOrder customerOrder1 = customerService.updateOrderToEnd(customerOrder.getId());
 
-        assertEquals(OrderStatus.WORK_DONE,customerOrder1.getOrderStatus());
+        assertEquals(OrderStatus.WORK_DONE, customerOrder1.getOrderStatus());
     }
+
+    @Test
+    void signUpNotValidEmail() {
+        Customer customer = new Customer("Shayan", "Rahmdel", "@gmail.com",
+                "Shayan1@", LocalDate.now(), LocalTime.of(12, 0, 0));
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            customerService.signUp(customer);
+        });
+
+    }
+
+    @Test
+    void createOrderWithNotValidDate() {
+        Customer customer = new Customer("Shayan", "Rahmdel", "shayan@gmail.com",
+                "Shayan1@", LocalDate.now(), LocalTime.of(12, 0, 0));
+        customerService.signUp(customer);
+        DutyCategory category = new DutyCategory("cleanig");
+        adminService.createDutyCategory(category);
+        SubDuty subDuty = new SubDuty("home cleaning", "cleaning", 100.0);
+        adminService.createSubDuty(subDuty, category.getId());
+        CustomerOrder customerOrder = new CustomerOrder(200.0, "clean",
+                LocalDate.of(2021, 1, 2), LocalTime.of(10, 10, 10));
+
+
+        assertThrows(PersistenceException.class, () -> {
+            customerService.createOrder(customerOrder, category.getId(), subDuty.getId(), customer.getId());
+        });
+
+    }
+
+    @Test
+    void createAddressWithNotValidPostalCode() {
+        Customer customer = new Customer("Shayan", "Rahmdel", "shayan@gmail.com",
+                "Shayan1@", LocalDate.now(), LocalTime.of(12, 0, 0));
+        customerService.signUp(customer);
+        DutyCategory category = new DutyCategory("cleanig");
+        adminService.createDutyCategory(category);
+        SubDuty subDuty = new SubDuty("home cleaning", "cleaning", 100.0);
+        adminService.createSubDuty(subDuty, category.getId());
+        CustomerOrder customerOrder = new CustomerOrder(200.0, "clean",
+                LocalDate.of(2025, 1, 1), LocalTime.of(10, 10, 10));
+        customerService.createOrder(customerOrder, category.getId(), subDuty.getId(), customer.getId());
+        Address address = new Address("tehran", "tehran", "sabalan", "123");
+
+        assertThrows(PersistenceException.class, () -> {
+            customerService.createAddress(address, customer.getId(), customerOrder.getId());
+        });
+    }
+
+    @Test
+    void updateOrderToBeginBeforeSuggestDate() throws IOException {
+        Customer customer = new Customer("Shayan", "Rahmdel", "shayan@gmail.com",
+                "Shayan1@", LocalDate.now(), LocalTime.of(12, 0, 0));
+        customerService.signUp(customer);
+        Expert expert = new Expert("Ali", "Alavi", "hasan@gmail.com", "Shayan1@", LocalDate.now(),
+                LocalTime.of(10, 0, 0));
+        expertService.signUp(expert, imageFile);
+        adminService.confirmExpert(expert.getId());
+        DutyCategory category = new DutyCategory("cleanig");
+        adminService.createDutyCategory(category);
+        SubDuty subDuty = new SubDuty("home cleaning", "cleaning", 100.0);
+        adminService.createSubDuty(subDuty, category.getId());
+        CustomerOrder customerOrder = new CustomerOrder(200.0, "clean",
+                LocalDate.of(2025, 1, 2), LocalTime.of(10, 10, 10));
+        customerService.createOrder(customerOrder, category.getId(), subDuty.getId(), customer.getId());
+        WorkSuggestion workSuggestion = new WorkSuggestion(LocalDate.of(2025, 1, 4),
+                LocalTime.of(9, 10, 10), 100.0, "3days");
+        expertService.createSuggest(workSuggestion, customerOrder.getId(), expert.getId());
+        customerService.acceptSuggest(workSuggestion.getId());
+        //date is before suggestion date
+
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            customerService.updateOrderToBegin(customerOrder.getId(),
+                    workSuggestion.getId(), LocalDate.of(2025, 1, 3));
+        });
+    }
+
 
 
     @AfterEach
