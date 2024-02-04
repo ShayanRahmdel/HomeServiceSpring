@@ -3,6 +3,7 @@ package com.shayanr.HomeServiceSpring.entity.business;
 
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.shayanr.HomeServiceSpring.entity.users.Expert;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -42,7 +43,8 @@ public class SubDuty  {
     )
     private Set<Expert> experts;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne()
+    @JsonIgnore
     private DutyCategory dutyCategory;
 
 
