@@ -2,6 +2,7 @@ package com.shayanr.HomeServiceSpring.service.impl;
 
 
 import com.shayanr.HomeServiceSpring.entity.business.CustomerOrder;
+import com.shayanr.HomeServiceSpring.exception.NotFoundException;
 import com.shayanr.HomeServiceSpring.repositoy.OrderRepository;
 import com.shayanr.HomeServiceSpring.service.OrderService;
 import jakarta.persistence.PersistenceException;
@@ -10,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -20,18 +22,14 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional
     public CustomerOrder saveOrder(CustomerOrder customerOrder) {
-        try {
-            orderRepository.save(customerOrder);
-        }catch (NullPointerException | PersistenceException e){
-            System.out.println("Error saving order");
-        }
-        return customerOrder;
+           return orderRepository.save(customerOrder);
+
     }
 
     @Override
-    public CustomerOrder findById(Integer orderId) {
-        CustomerOrder customerOrder = orderRepository.findById(orderId).orElse(null);
-        if (customerOrder ==null){
+    public Optional<CustomerOrder> findById(Integer orderId) {
+        Optional<CustomerOrder> customerOrder = orderRepository.findById(orderId);
+        if (customerOrder.isEmpty()){
             throw new NullPointerException("cant find order");
         }
         return customerOrder;
@@ -41,16 +39,14 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional
     public void deleteById(Integer orderId) {
-        if (orderId==null){
-            throw new NullPointerException("cant delete order");
-        }
+        CustomerOrder customerOrder = orderRepository.findById(orderId).orElse(null);
         orderRepository.deleteById(orderId);
     }
 
     @Override
     public List<CustomerOrder> seeOrders(Integer expertId) {
         if (expertId==null){
-            throw new NullPointerException("cant find order");
+            throw new NotFoundException("cant expert");
         }
        return orderRepository.seeOrders(expertId);
     }
