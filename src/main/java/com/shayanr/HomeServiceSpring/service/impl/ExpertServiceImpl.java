@@ -6,6 +6,9 @@ import com.shayanr.HomeServiceSpring.entity.business.WorkSuggestion;
 import com.shayanr.HomeServiceSpring.entity.enumration.Confirmation;
 import com.shayanr.HomeServiceSpring.entity.enumration.OrderStatus;
 import com.shayanr.HomeServiceSpring.entity.users.Expert;
+import com.shayanr.HomeServiceSpring.exception.IsEmptyFieldException;
+import com.shayanr.HomeServiceSpring.exception.NotFoundException;
+import com.shayanr.HomeServiceSpring.exception.ValidationException;
 import com.shayanr.HomeServiceSpring.repositoy.ExpertRepository;
 import com.shayanr.HomeServiceSpring.service.ExpertService;
 import com.shayanr.HomeServiceSpring.service.OrderService;
@@ -16,6 +19,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -23,6 +27,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -37,26 +42,23 @@ public class ExpertServiceImpl implements ExpertService {
     @Override
     @Transactional
     public Expert save(Expert expert) {
-        try {
-            expertRepository.save(expert);
-        } catch (NullPointerException | PersistenceException e) {
-            System.out.println("Error saving Expert");
+        return expertRepository.save(expert);
+
+    }
+
+    @Override
+    public Optional<Expert> findById(Integer expertId) {
+        Optional<Expert> expert = expertRepository.findById(expertId);
+        if (expert.isEmpty()) {
+            throw new NotFoundException("No expert found");
         }
         return expert;
     }
 
     @Override
-    public Expert findById(Integer expertId) {
-        return expertRepository.findById(expertId).orElseThrow(() -> new NullPointerException("no id found"));
-
-    }
-
-    @Override
     @Transactional
     public void deleteById(Integer expertId) {
-        if (expertId == null) {
-            throw new NullPointerException("cant find expert");
-        }
+        Expert expert = expertRepository.findById(expertId).orElse(null);
         expertRepository.deleteById(expertId);
     }
 
@@ -69,17 +71,17 @@ public class ExpertServiceImpl implements ExpertService {
     @Transactional
     public Expert signUp(Expert expert, File image) throws IOException {
         if (expert == null) {
-            throw new NullPointerException("null expert");
+            throw new NotFoundException("null expert");
         }
         if (!Validate.nameValidation(expert.getFirstName()) ||
                 !Validate.nameValidation(expert.getLastName()) ||
                 !Validate.emailValidation(expert.getEmail()) ||
                 !Validate.passwordValidation(expert.getPassword())) {
-            throw new PersistenceException("wrong validation");
+            throw new ValidationException("wrong validation");
         }
         String extension = FilenameUtils.getExtension(image.getName());
-        if (extension.equalsIgnoreCase("video") || extension.equalsIgnoreCase("mp4")) {
-            throw new PersistenceException("Invalid image format. Only image files are allowed.");
+        if (!extension.equalsIgnoreCase("jpg") || !extension.equalsIgnoreCase("png")) {
+            throw new ValidationException("Invalid image format. Only image files are allowed.");
         }
         expert.setConfirmation(Confirmation.NEW);
 
@@ -92,10 +94,10 @@ public class ExpertServiceImpl implements ExpertService {
 
     @Override
     public Expert changePassword(Integer expertId, String newPassword, String confirmPassword) {
-        Expert expert = expertRepository.findById(expertId).orElseThrow(() -> new NullPointerException("Could not find expert"));
+        Expert expert = expertRepository.findById(expertId).orElseThrow(() -> new NotFoundException("Could not find expert"));
 
         if (!Validate.passwordValidation(newPassword) || !newPassword.equals(confirmPassword)) {
-            throw new PersistenceException("Password not valid");
+            throw new ValidationException("Password not valid");
         }
         expert.setPassword(newPassword);
         expertRepository.save(expert);
@@ -106,9 +108,9 @@ public class ExpertServiceImpl implements ExpertService {
 
     @Override
     public List<CustomerOrder> seeOrder(Integer expertId) {
-        Expert expert = expertRepository.findById(expertId).orElseThrow(() -> new NullPointerException("customerId not found"));
+        Expert expert = expertRepository.findById(expertId).orElseThrow(() -> new NotFoundException("customerId not found"));
         if (expert.getConfirmation().equals(Confirmation.NEW)) {
-            throw new PersistenceException("You cant see Orders yet");
+            throw new ValidationException("You cant see Orders yet");
         }
         return orderService.seeOrders(expertId);
 
@@ -117,9 +119,9 @@ public class ExpertServiceImpl implements ExpertService {
 
     @Override
     public void saveImage(String imagePath, Integer expertId) throws IOException {
-        Expert expert = expertRepository.findById(expertId).orElseThrow(() -> new NullPointerException("null id"));
+        Expert expert = expertRepository.findById(expertId).orElseThrow(() -> new NotFoundException("null id"));
         if (imagePath.isEmpty()) {
-            throw new NullPointerException();
+            throw new IsEmptyFieldException("path must not be empty");
         }
         FileOutputStream fos = new FileOutputStream(imagePath);
         fos.write(expert.getImage());
@@ -129,17 +131,15 @@ public class ExpertServiceImpl implements ExpertService {
     @Override
     public WorkSuggestion createSuggest(WorkSuggestion workSuggestion, Integer orderId, Integer expertId) {
         List<CustomerOrder> customerOrders = seeOrder(expertId);
-        CustomerOrder customerOrder = orderService.findById(orderId);
-        Expert expert = expertRepository.findById(expertId).orElse(null);
+        CustomerOrder customerOrder = orderService.findById(orderId).orElseThrow(()-> new NotFoundException("Not found order"));
+        Expert expert = expertRepository.findById(expertId).orElseThrow(()-> new NotFoundException("Not found expert"));
 
-        if (customerOrder == null || expert == null) {
-            throw new NullPointerException("wrong expert id or empty order");
-        }
+
         if (workSuggestion.getSuggestedPrice() < customerOrder.getSubDuty().getBasePrice()) {
-            throw new PersistenceException("your suggestion price is low");
+            throw new ValidationException("your suggestion price is low");
         }
         if (!Validate.isValidDateAndTimeForSuggest(workSuggestion.getSuggestedDate(), workSuggestion.getSuggestedBeginTime(), customerOrder)) {
-            throw new PersistenceException("not vaild date");
+            throw new ValidationException("not vaild date");
         }
         workSuggestion.setExpert(expert);
         workSuggestion.setCustomerOrder(customerOrder);
