@@ -11,7 +11,7 @@ public interface WorkSuggestionService {
     WorkSuggestion save(WorkSuggestion workSuggestion);
 
 
-    WorkSuggestion findById(Integer workSuggestionId);
+    Optional<WorkSuggestion> findById(Integer workSuggestionId);
 
     void deleteById(Integer workSuggestionId);
 
