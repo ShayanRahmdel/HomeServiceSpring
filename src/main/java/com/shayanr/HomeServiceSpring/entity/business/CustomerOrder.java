@@ -39,7 +39,7 @@ public class CustomerOrder {
     @ManyToOne
     private Customer customer;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne()
     private SubDuty subDuty;
 
     @OneToOne
