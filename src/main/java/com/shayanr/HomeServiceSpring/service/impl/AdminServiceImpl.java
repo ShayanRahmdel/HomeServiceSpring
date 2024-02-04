@@ -7,6 +7,10 @@ import com.shayanr.HomeServiceSpring.entity.business.SubDuty;
 import com.shayanr.HomeServiceSpring.entity.enumration.Confirmation;
 import com.shayanr.HomeServiceSpring.entity.users.Customer;
 import com.shayanr.HomeServiceSpring.entity.users.Expert;
+rimport com.shayanr.HomeServiceSpring.exception.DuplicateException;
+import com.shayanr.HomeServiceSpring.exception.IsEmptyFieldException;
+import com.shayanr.HomeServiceSpring.exception.NotFoundException;
+import com.shayanr.HomeServiceSpring.exception.ValidationException;
 import com.shayanr.HomeServiceSpring.repositoy.AdminRepository;
 import com.shayanr.HomeServiceSpring.service.*;
 import jakarta.persistence.PersistenceException;
@@ -31,50 +35,43 @@ public class AdminServiceImpl implements AdminService {
     @Transactional
     public DutyCategory createDutyCategory(DutyCategory dutyCategory) {
         List<DutyCategory> all = dutyCategoryService.findAll();
-        try {
-            if (dutyCategory.getTitle().isEmpty()) {
-                throw new PersistenceException("empty title");
-            }
-            for (DutyCategory category : all) {
-                if (category.getTitle().equals(dutyCategory.getTitle())) {
-                    throw new PersistenceException("Duplicate title");
-                }
-            }
-            dutyCategoryService.save(dutyCategory);
-            return dutyCategory;
-        } catch (PersistenceException | NullPointerException e) {
-            System.out.println(e.getMessage());
+
+        if (dutyCategory.getTitle().isEmpty()) {
+            throw new IsEmptyFieldException("empty title");
         }
-        return null;
+        for (DutyCategory category : all) {
+            if (category.getTitle().equals(dutyCategory.getTitle())) {
+                throw new DuplicateException("Duplicate title");
+            }
+        }
+        dutyCategoryService.save(dutyCategory);
+        return dutyCategory;
+
     }
 
     @Override
     @Transactional
     public SubDuty createSubDuty(SubDuty subDuty, Integer category) {
         Collection<SubDuty> all = subDutyService.findAll();
-        try {
-            DutyCategory dutyCategory = dutyCategoryService.findById(category);
-            for (SubDuty sub : all) {
-                String title = sub.getTitle();
-                if (subDuty.getTitle().equals(title)) {
-                    throw new PersistenceException("Duplicate description");
-                }
-            }
 
-            if (dutyCategory == null) {
-                throw new PersistenceException("category not found");
+        DutyCategory dutyCategory = dutyCategoryService.findById(category).orElse(null);
+        for (SubDuty sub : all) {
+            String title = sub.getTitle();
+            if (subDuty.getTitle().equals(title)) {
+                throw new DuplicateException("Duplicate description");
             }
-            subDuty.setDutyCategory(dutyCategory);
-            if (subDuty.getDescription().equals("")) {
-                throw new PersistenceException("Empty description");
-            }
-            subDutyService.save(subDuty);
-            return subDuty;
-        } catch (PersistenceException | NullPointerException e) {
-            System.out.println(e.getMessage());
         }
 
-        return null;
+        if (dutyCategory == null) {
+            throw new NotFoundException("category not found");
+        }
+        subDuty.setDutyCategory(dutyCategory);
+        if (subDuty.getDescription().equals("")) {
+            throw new IsEmptyFieldException("Empty description");
+        }
+        subDutyService.save(subDuty);
+        return subDuty;
+
     }
 
     @Override
@@ -101,13 +98,15 @@ public class AdminServiceImpl implements AdminService {
     @Transactional
     public Expert addExpertInSubDuty(Integer expertId, Integer subDutyId) {
 
-        Expert expert = expertService.findById(expertId);
-        SubDuty subDuty = subDutyService.findById(subDutyId);
-        if (expert == null || subDuty == null || !expert.getConfirmation().equals(Confirmation.ACCEPTED) ||
+        Expert expert = expertService.findById(expertId).orElse(null);
+        SubDuty subDuty = subDutyService.findById(subDutyId).orElse(null);
+        assert expert != null;
+        if (!expert.getConfirmation().equals(Confirmation.ACCEPTED) ||
                 !validateExpertOneDutyCategory(expert, subDutyId)) {
-            throw new PersistenceException();
+            throw new ValidationException("check validtoon again");
         }
         expert.getSubDuties().add(subDuty);
+        assert subDuty != null;
         subDuty.getExperts().add(expert);
 
         expertService.save(expert);
@@ -119,23 +118,20 @@ public class AdminServiceImpl implements AdminService {
     @Transactional
     public Expert confirmExpert(Integer expertId) {
 
-        try {
-            Expert expert = expertService.findById(expertId);
-            expert.setConfirmation(Confirmation.ACCEPTED);
-            expertService.save(expert);
-            return expert;
-        } catch (NullPointerException | PersistenceException e) {
-            System.out.println(e.getMessage());
-        }
-        return null;
+        Expert expert = expertService.findById(expertId).orElse(null);
+        assert expert != null;
+        expert.setConfirmation(Confirmation.ACCEPTED);
+        expertService.save(expert);
+        return expert;
+
     }
 
     @Override
     @Transactional
     public Expert removeExpertFromSubDuty(Integer expertId, Integer subDutyId) {
 
-        Expert expert = expertService.findById(expertId);
-        SubDuty subDuty = subDutyService.findById(subDutyId);
+        Expert expert = expertService.findById(expertId).orElse(null);
+        SubDuty subDuty = subDutyService.findById(subDutyId).orElse(null);
         if (expert == null || subDuty == null) {
             throw new NullPointerException();
         }
@@ -153,7 +149,7 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public boolean validateExpertOneDutyCategory(Expert expert, Integer newDutyCategory) {
         Set<SubDuty> subDuties = expert.getSubDuties();
-        SubDuty subDuty = subDutyService.findById(newDutyCategory);
+        SubDuty subDuty = subDutyService.findById(newDutyCategory).orElse(null);
         assert subDuty != null;
         Integer id = subDuty.getDutyCategory().getId();
         for (SubDuty expertsubDuty : subDuties) {
@@ -168,41 +164,33 @@ public class AdminServiceImpl implements AdminService {
     @Override
     @Transactional
     public void removeDutyCategory(Integer dutyCategoryId) {
-        try {
-            dutyCategoryService.deleteById(dutyCategoryId);
-        } catch (NullPointerException e) {
-            System.out.println("Unable to delete");
-        }
+        DutyCategory dutyCategory = dutyCategoryService.findById(dutyCategoryId).orElse(null);
+        dutyCategoryService.deleteById(dutyCategoryId);
+
     }
 
     @Override
     @Transactional
     public void removeSubDuty(Integer subDutyId) {
-        try {
-            subDutyService.deleteById(subDutyId);
-        } catch (NullPointerException e) {
-            System.out.println("Unable to delete");
-        }
+        SubDuty subDuty = subDutyService.findById(subDutyId).orElse(null);
+        subDutyService.deleteById(subDutyId);
+
     }
 
     @Override
     @Transactional
     public void removeCustomer(Integer customerId) {
-        try {
-            customerService.deleteById(customerId);
-        } catch (NullPointerException e) {
-            System.out.println("Unable to delete");
-        }
+        Customer customer = customerService.findById(customerId).orElse(null);
+        customerService.deleteById(customerId);
+
     }
 
     @Override
     @Transactional
     public void removeExpert(Integer expertId) {
-        try {
-            expertService.deleteById(expertId);
-        } catch (NullPointerException e) {
-            System.out.println("Unable to delete");
-        }
+        Expert expert = expertService.findById(expertId).orElse(null);
+        expertService.deleteById(expertId);
+
     }
 
     @Override
@@ -213,13 +201,13 @@ public class AdminServiceImpl implements AdminService {
 
         for (SubDuty subDuty : subDuties) {
             if (newTitle.equals(subDuty.getTitle())) {
-                throw new PersistenceException("duplicate title");
+                throw new DuplicateException("duplicate title");
             }
         }
-        SubDuty subDuty = subDutyService.findById(subDutyId);
+        SubDuty subDuty = subDutyService.findById(subDutyId).orElse(null);
         assert subDuty != null;
         if (newDescription.isEmpty() || newBasePrice <= 0 || newTitle.isEmpty()) {
-            throw new PersistenceException();
+            throw new ValidationException("check validation again");
         }
         subDuty.setTitle(newTitle);
         subDuty.setDescription(newDescription);
@@ -245,13 +233,14 @@ public class AdminServiceImpl implements AdminService {
     @Override
     @Transactional
     public DutyCategory updateDutyCategory(Integer dutyCategoryId, String newTitle) {
-        DutyCategory dutyCategory = dutyCategoryService.findById(dutyCategoryId);
+        DutyCategory dutyCategory = dutyCategoryService.findById(dutyCategoryId).orElse(null);
         List<DutyCategory> dutyCategories = dutyCategoryService.findAll();
-        for (DutyCategory dutyCategory1 : dutyCategories ) {
+        for (DutyCategory dutyCategory1 : dutyCategories) {
             if (newTitle.isEmpty() || dutyCategory1.getTitle().equals(newTitle)) {
-                throw new PersistenceException();
+                throw new ValidationException("check again");
             }
         }
+        assert dutyCategory != null;
         dutyCategory.setTitle(newTitle);
         return dutyCategoryService.save(dutyCategory);
 
