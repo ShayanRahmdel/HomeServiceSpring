@@ -5,23 +5,25 @@ package com.shayanr.HomeServiceSpring.service;
 import com.shayanr.HomeServiceSpring.entity.business.CustomerOrder;
 import com.shayanr.HomeServiceSpring.entity.business.WorkSuggestion;
 import com.shayanr.HomeServiceSpring.entity.users.Expert;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 public interface ExpertService {
 
     Expert save(Expert expert);
 
-    Expert findById(Integer expertId);
+    Optional<Expert> findById(Integer expertId);
 
     void deleteById(Integer expertId);
 
     List<Expert> findAll();
 
-    Expert signUp(Expert expert, File image) throws IOException;
+    Expert signUp(Expert expert,File image ) throws IOException;
 
     Expert changePassword(Integer expertId,String newPassword,String confirmPassword);
 
