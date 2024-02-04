@@ -2,6 +2,7 @@ package com.shayanr.HomeServiceSpring.service.impl;
 
 
 import com.shayanr.HomeServiceSpring.entity.business.WorkSuggestion;
+import com.shayanr.HomeServiceSpring.exception.NotFoundException;
 import com.shayanr.HomeServiceSpring.repositoy.WorkSuggestionRepository;
 import com.shayanr.HomeServiceSpring.service.WorkSuggestionService;
 import jakarta.persistence.PersistenceException;
@@ -29,10 +30,10 @@ public class WorkSuggestionServiceImpl implements WorkSuggestionService {
     }
 
     @Override
-    public WorkSuggestion findById(Integer workSuggestionId) {
-        WorkSuggestion workSuggestion = workSuggestionRepository.findById(workSuggestionId).orElse(null);
-        if (workSuggestion == null) {
-            throw new NullPointerException("workSuggestion is null");
+    public Optional<WorkSuggestion> findById(Integer workSuggestionId) {
+        Optional<WorkSuggestion> workSuggestion = workSuggestionRepository.findById(workSuggestionId);
+        if (workSuggestion.isEmpty()) {
+            throw new NotFoundException("workSuggestion is null");
         }
         return workSuggestion;
     }
@@ -41,7 +42,7 @@ public class WorkSuggestionServiceImpl implements WorkSuggestionService {
     @Transactional
     public void deleteById(Integer workSuggestionId) {
             if (workSuggestionId==null){
-                throw new NullPointerException("cant find workSuggestion");
+                throw new NotFoundException("cant find workSuggestion");
             }
             workSuggestionRepository.deleteById(workSuggestionId);
     }
