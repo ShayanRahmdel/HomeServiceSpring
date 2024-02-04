@@ -28,19 +28,25 @@ public class WorkSuggestion  {
 
     private Double suggestedPrice;
 
-    private String suggestedWorkTime;
+    private LocalTime workduration;
 
     @ManyToOne(fetch = FetchType.EAGER)
     private Expert expert;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne()
     private CustomerOrder customerOrder;
 
-    public WorkSuggestion(LocalDate suggestedDate, LocalTime suggestedBeginTime, Double suggestedPrice, String suggestedWorkTime) {
+    public void setworkduration(){
+        if (workduration.isBefore(suggestedBeginTime)){
+            throw new PersistenceException("Your time is before the suggested");
+        }
+    }
+
+    public WorkSuggestion(LocalDate suggestedDate, LocalTime suggestedBeginTime, Double suggestedPrice, LocalTime workduration) {
         this.suggestedDate = suggestedDate;
         this.suggestedBeginTime = suggestedBeginTime;
         this.suggestedPrice = suggestedPrice;
-        this.suggestedWorkTime = suggestedWorkTime;
+        this.workduration = workduration;
     }
 
     @Override
@@ -50,7 +56,7 @@ public class WorkSuggestion  {
                 "suggestedDate  " + suggestedDate +"\n" +
                 "suggestedBeginTime  " + suggestedBeginTime +"\n" +
                 "suggestedPrice " + suggestedPrice +"\n" +
-                "suggestedWorkTime " + suggestedWorkTime + "\n" +
+                "suggestedWorkTime " + workduration + "\n" +
                 "expert " + expert +"\n";
     }
 }
