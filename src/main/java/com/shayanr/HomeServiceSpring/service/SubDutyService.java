@@ -5,6 +5,7 @@ package com.shayanr.HomeServiceSpring.service;
 import com.shayanr.HomeServiceSpring.entity.business.SubDuty;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface SubDutyService {
 
@@ -12,7 +13,7 @@ public interface SubDutyService {
 
     void deleteById(Integer subDutyId);
 
-    SubDuty findById(Integer subDutyId);
+    Optional<SubDuty> findById(Integer subDutyId);
 
     List<SubDuty> findAll();
 
