@@ -7,6 +7,8 @@ import com.shayanr.HomeServiceSpring.entity.business.SubDuty;
 import com.shayanr.HomeServiceSpring.entity.business.WorkSuggestion;
 import com.shayanr.HomeServiceSpring.entity.enumration.OrderStatus;
 import com.shayanr.HomeServiceSpring.entity.users.Customer;
+import com.shayanr.HomeServiceSpring.exception.NotFoundException;
+import com.shayanr.HomeServiceSpring.exception.ValidationException;
 import com.shayanr.HomeServiceSpring.repositoy.CustomerRepository;
 import com.shayanr.HomeServiceSpring.service.*;
 import com.shayanr.HomeServiceSpring.util.Validate;
@@ -37,17 +39,18 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public Optional<Customer> findById(Integer customerId) {
-        if (customerId == null) {
-            throw new NullPointerException("customerId cannot be null");
+        Optional<Customer> customer = customerRepository.findById(customerId);
+        if(customer.isEmpty()){
+            throw new NotFoundException("Customer not found");
         }
-        return customerRepository.findById(customerId);
+        return customer;
     }
 
     @Override
     @Transactional
     public void deleteById(Integer customerId) {
         if (customerId == null) {
-            throw new NullPointerException("customerId cannot be null");
+            throw new NotFoundException("customerId cannot be null");
         }
         customerRepository.deleteById(customerId);
 
@@ -61,13 +64,6 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     @Transactional
     public Customer signUp(Customer customer) {
-
-        if (!Validate.nameValidation(customer.getFirstName()) ||
-                !Validate.nameValidation(customer.getLastName()) ||
-                !Validate.emailValidation(customer.getEmail()) ||
-                !Validate.passwordValidation(customer.getPassword())) {
-            throw new IllegalArgumentException();
-        }
         customerRepository.save(customer);
         return customer;
 
@@ -76,9 +72,9 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     @Transactional
     public Customer changePassword(Integer customerId, String newPassword, String confirmPassword) {
-        Customer customer = customerRepository.findById(customerId).orElseThrow(() -> new NullPointerException("Could not find customer"));
+        Customer customer = customerRepository.findById(customerId).orElseThrow(() -> new NotFoundException("Could not find customer"));
         if (!Validate.passwordValidation(newPassword) || !newPassword.equals(confirmPassword)) {
-            throw new PersistenceException("Password not valid");
+            throw new ValidationException("Password not valid");
         }
         customer.setPassword(newPassword);
         customerRepository.save(customer);
@@ -88,17 +84,15 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     @Transactional
     public CustomerOrder createOrder(CustomerOrder customerOrder, Integer category, Integer subDutyId, Integer customerId) {
-        SubDuty subDuty = subDutyService.findById(subDutyId);
-        Customer customer = customerRepository.findById(customerId).orElseThrow(() -> new NullPointerException("Could not find customer"));
-        if (dutyCategoryService.findById(category) == null) {
-            throw new NullPointerException();
-        }
+        SubDuty subDuty = subDutyService.findById(subDutyId).orElseThrow(()-> new NotFoundException("SubDuty not found"));
+        Customer customer = customerRepository.findById(customerId).orElseThrow(() -> new NotFoundException("Could not find customer"));
+
 
         if (!Validate.isValidDateAndTime(customerOrder.getWorkDate(), customerOrder.getTimeDate())) {
-            throw new PersistenceException();
+            throw new ValidationException("check date");
         }
         if (!isValidPrice(subDuty, customerOrder.getProposedPrice())) {
-            throw new PersistenceException();
+            throw new ValidationException("check price");
         }
 
         customerOrder.setSubDuty(subDuty);
@@ -110,11 +104,11 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     @Transactional
     public Address createAddress(Address address, Integer customerId, Integer orderId) {
-        Customer customer = customerRepository.findById(customerId).orElse(null);
-        CustomerOrder customerOrder = orderService.findById(orderId);
+        Customer customer = customerRepository.findById(customerId).orElseThrow(()->new NotFoundException("Customer not found"));
+        CustomerOrder customerOrder = orderService.findById(orderId).orElseThrow(()->new NotFoundException("Order not found"));
         if (!Validate.cityValidation(address.getCity()) || !Validate.postalValidation(address.getPostalCode())
                 || !Validate.isValidCity(address.getState())) {
-            throw new PersistenceException("not a valid address");
+            throw new ValidationException("not a valid address");
         }
         address.setCustomer(customer);
         addressService.saveAddress(address);
@@ -129,14 +123,14 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public List<WorkSuggestion> seeSuggestionsByPrice(Integer customerId) {
 
-        customerRepository.findById(customerId).orElseThrow(() -> new NullPointerException("Customer not found"));
+        customerRepository.findById(customerId).orElseThrow(() -> new NotFoundException("Customer not found"));
         return customerRepository.seeSuggestionsByPrice(customerId);
     }
 
     @Override
     public List<WorkSuggestion> seeSuggestionsByExpertScore(Integer customerId) {
 
-        customerRepository.findById(customerId).orElseThrow(() -> new NullPointerException("Customer not found"));
+        customerRepository.findById(customerId).orElseThrow(() -> new NotFoundException("Customer not found"));
         return customerRepository.seeSuggestionsByExpertScore(customerId);
 
     }
@@ -144,7 +138,7 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     @Transactional
     public CustomerOrder acceptSuggest(Integer suggestId) {
-        WorkSuggestion workSuggestion = workSuggestionService.findById(suggestId);
+        WorkSuggestion workSuggestion = workSuggestionService.findById(suggestId).orElseThrow(() -> new NotFoundException("not found suggestion"));
         assert workSuggestion != null;
         CustomerOrder customerOrder = workSuggestion.getCustomerOrder();
         customerOrder.setOrderStatus(OrderStatus.WAITING_FOR_THE_SPECIALIST_TO_COME);
@@ -156,12 +150,12 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     @Transactional
     public CustomerOrder updateOrderToBegin(Integer orderId, Integer suggestionId, LocalDate date) {
-        CustomerOrder customerOrder = orderService.findById(orderId);
-        WorkSuggestion workSuggestion = workSuggestionService.findById(suggestionId);
+        CustomerOrder customerOrder = orderService.findById(orderId).orElseThrow(()-> new NotFoundException("Order not found"));
+        WorkSuggestion workSuggestion = workSuggestionService.findById(suggestionId).orElseThrow(()-> new NotFoundException("Suggestion not found"));
 
         assert workSuggestion != null;
         if (date.isBefore(workSuggestion.getSuggestedDate())) {
-            throw new IllegalArgumentException("Date is before " + workSuggestion.getSuggestedDate());
+            throw new ValidationException("Date is before " + workSuggestion.getSuggestedDate());
         }
         customerOrder.setOrderStatus(OrderStatus.WORK_BEGIN);
         orderService.saveOrder(customerOrder);
@@ -172,7 +166,7 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     @Transactional
     public CustomerOrder updateOrderToEnd(Integer orderId) {
-        CustomerOrder customerOrder = orderService.findById(orderId);
+        CustomerOrder customerOrder = orderService.findById(orderId).orElseThrow(()-> new NotFoundException("order not found"));
         customerOrder.setOrderStatus(OrderStatus.WORK_DONE);
         orderService.saveOrder(customerOrder);
         return customerOrder;
