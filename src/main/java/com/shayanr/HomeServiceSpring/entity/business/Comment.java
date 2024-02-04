@@ -29,7 +29,7 @@ public class Comment {
     @OneToOne(mappedBy = "comment")
     private CustomerOrder customerOrder;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne()
     private Customer customer;
 
 }
