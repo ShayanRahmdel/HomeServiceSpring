@@ -4,12 +4,13 @@ package com.shayanr.HomeServiceSpring.service;
 import com.shayanr.HomeServiceSpring.entity.business.DutyCategory;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface DutyCategoryService {
 
     DutyCategory save(DutyCategory category);
 
-    DutyCategory findById(Integer dutyCategoryId);
+    Optional<DutyCategory> findById(Integer dutyCategoryId);
 
     void deleteById(Integer dutyCategoryId);
 
