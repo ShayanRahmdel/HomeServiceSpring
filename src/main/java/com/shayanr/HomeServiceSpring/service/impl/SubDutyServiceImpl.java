@@ -2,6 +2,7 @@ package com.shayanr.HomeServiceSpring.service.impl;
 
 
 import com.shayanr.HomeServiceSpring.entity.business.SubDuty;
+import com.shayanr.HomeServiceSpring.exception.NotFoundException;
 import com.shayanr.HomeServiceSpring.repositoy.SubDutyRepository;
 import com.shayanr.HomeServiceSpring.service.SubDutyService;
 import jakarta.persistence.PersistenceException;
@@ -10,10 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -37,16 +35,16 @@ public class SubDutyServiceImpl implements SubDutyService {
     @Transactional
     public void deleteById(Integer subDutyId) {
         if (subDutyId == null) {
-            throw new NullPointerException("cant find subduty");
+            throw new NotFoundException("cant find subduty");
         }
         subDutyRepository.deleteById(subDutyId);
     }
 
     @Override
-    public SubDuty findById(Integer subDutyId) {
-        SubDuty subDuty = subDutyRepository.findById(subDutyId).orElse(null);
-        if (subDuty == null) {
-            throw new NullPointerException("cant find subduty");
+    public Optional<SubDuty> findById(Integer subDutyId) {
+        Optional<SubDuty> subDuty = subDutyRepository.findById(subDutyId);
+        if (subDuty.isEmpty()) {
+            throw new NotFoundException("cant find subduty");
         }
         return subDuty;
 
