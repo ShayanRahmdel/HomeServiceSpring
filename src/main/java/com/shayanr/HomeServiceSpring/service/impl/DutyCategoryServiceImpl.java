@@ -2,6 +2,7 @@ package com.shayanr.HomeServiceSpring.service.impl;
 
 
 import com.shayanr.HomeServiceSpring.entity.business.DutyCategory;
+import com.shayanr.HomeServiceSpring.exception.NotFoundException;
 import com.shayanr.HomeServiceSpring.repositoy.DutyCategoryRepository;
 import com.shayanr.HomeServiceSpring.service.DutyCategoryService;
 import jakarta.persistence.PersistenceException;
@@ -12,6 +13,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -32,10 +34,10 @@ public class DutyCategoryServiceImpl implements DutyCategoryService {
     }
 
     @Override
-    public DutyCategory findById(Integer dutyCategoryId) {
-        DutyCategory dutyCategory = dutyCategoryRepository.findById(dutyCategoryId).orElse(null);
-        if (dutyCategory == null) {
-            throw new NullPointerException("dutyCategoryId is null");
+    public Optional<DutyCategory> findById(Integer dutyCategoryId) {
+        Optional<DutyCategory> dutyCategory = dutyCategoryRepository.findById(dutyCategoryId);
+        if (dutyCategory.isEmpty()) {
+            throw new NotFoundException("dutyCategoryId is null");
         }
         return dutyCategory;
 
