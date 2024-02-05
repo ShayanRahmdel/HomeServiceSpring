@@ -1,10 +1,8 @@
 package com.shayanr.HomeServiceSpring.dto;
 
 import jakarta.persistence.Column;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.Pattern;
+import jakarta.validation.ValidationException;
+import jakarta.validation.constraints.*;
 import jdk.jfr.Name;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -34,7 +32,7 @@ public class CustomerRequestDto {
     @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8}$")
     private String password;
 
-
+    @FutureOrPresent
     private LocalDate signUpDate;
 
 
