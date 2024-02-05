@@ -1,13 +1,20 @@
 package com.shayanr.HomeServiceSpring.dto;
 
+import com.shayanr.HomeServiceSpring.exception.NotFoundException;
+import com.shayanr.HomeServiceSpring.exception.ValidationException;
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalTime;
 @AllArgsConstructor
@@ -30,20 +37,14 @@ public class ExpertRequestDto {
     @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8}$")
     private String password;
 
-
+    @FutureOrPresent
     private LocalDate signUpDate;
 
 
     private LocalTime signUpTime;
 
+    private String path;
 
-    private byte[] image;
 
-    public void setImage(byte[] image) {
-        if (image.length > 300 * 1024) {
-            throw new IllegalArgumentException("Image size exceeds the limit of 300KB.");
-        }
-        this.image = image;
-    }
 
 }
