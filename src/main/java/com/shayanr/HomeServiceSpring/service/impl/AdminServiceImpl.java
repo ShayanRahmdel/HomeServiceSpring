@@ -4,6 +4,7 @@ package com.shayanr.HomeServiceSpring.service.impl;
 import com.shayanr.HomeServiceSpring.entity.business.DutyCategory;
 
 import com.shayanr.HomeServiceSpring.entity.business.SubDuty;
+import com.shayanr.HomeServiceSpring.entity.business.Wallet;
 import com.shayanr.HomeServiceSpring.entity.enumration.Confirmation;
 import com.shayanr.HomeServiceSpring.entity.users.Customer;
 import com.shayanr.HomeServiceSpring.entity.users.Expert;
@@ -120,6 +121,9 @@ public class AdminServiceImpl implements AdminService {
         Expert expert = expertService.findById(expertId).orElse(null);
         assert expert != null;
         expert.setConfirmation(Confirmation.ACCEPTED);
+        Wallet wallet = new Wallet();
+        wallet.setAmount(0.0);
+        expert.setWallet(wallet);
         expertService.save(expert);
         return expert;
 
