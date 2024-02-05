@@ -23,7 +23,7 @@ public interface ExpertService {
 
     List<Expert> findAll();
 
-    Expert signUp(Expert expert,File image ) throws IOException;
+    Expert signUp(Expert expert) throws IOException;
 
     Expert changePassword(Integer expertId,String newPassword,String confirmPassword);
 
@@ -32,7 +32,6 @@ public interface ExpertService {
     void saveImage(String imagePath,Integer expertId) throws IOException;
 
     WorkSuggestion createSuggest(WorkSuggestion workSuggestion, Integer orderId, Integer expertId);
-
 
     void deleteAll();
 
