@@ -2,6 +2,7 @@ package com.shayanr.HomeServiceSpring.service.impl;
 
 
 import com.shayanr.HomeServiceSpring.entity.business.CustomerOrder;
+import com.shayanr.HomeServiceSpring.entity.business.Wallet;
 import com.shayanr.HomeServiceSpring.entity.business.WorkSuggestion;
 import com.shayanr.HomeServiceSpring.entity.enumration.Confirmation;
 import com.shayanr.HomeServiceSpring.entity.enumration.OrderStatus;
@@ -12,6 +13,7 @@ import com.shayanr.HomeServiceSpring.exception.ValidationException;
 import com.shayanr.HomeServiceSpring.repositoy.ExpertRepository;
 import com.shayanr.HomeServiceSpring.service.ExpertService;
 import com.shayanr.HomeServiceSpring.service.OrderService;
+import com.shayanr.HomeServiceSpring.service.WalletService;
 import com.shayanr.HomeServiceSpring.service.WorkSuggestionService;
 import com.shayanr.HomeServiceSpring.util.Validate;
 import jakarta.persistence.PersistenceException;
@@ -26,6 +28,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,6 +42,8 @@ public class ExpertServiceImpl implements ExpertService {
     private final OrderService orderService;
 
     private final WorkSuggestionService workSuggestionService;
+
+    private final WalletService walletService;
 
     @Override
     @Transactional
@@ -69,24 +75,14 @@ public class ExpertServiceImpl implements ExpertService {
 
     @Override
     @Transactional
-    public Expert signUp(Expert expert, File image) throws IOException {
+    public Expert signUp(Expert expert) throws IOException {
         if (expert == null) {
             throw new NotFoundException("null expert");
         }
-        if (!Validate.nameValidation(expert.getFirstName()) ||
-                !Validate.nameValidation(expert.getLastName()) ||
-                !Validate.emailValidation(expert.getEmail()) ||
-                !Validate.passwordValidation(expert.getPassword())) {
-            throw new ValidationException("wrong validation");
-        }
-        String extension = FilenameUtils.getExtension(image.getName());
-        if (!extension.equalsIgnoreCase("jpg") || !extension.equalsIgnoreCase("png")) {
-            throw new ValidationException("Invalid image format. Only image files are allowed.");
-        }
+        Wallet wallet = new Wallet();
+        wallet.setAmount(0.0);
+        expert.setWallet(wallet);
         expert.setConfirmation(Confirmation.NEW);
-
-        byte[] imageInbytes = setImageToByte(image);
-        expert.setImage(imageInbytes);
         expertRepository.save(expert);
         return expert;
 
@@ -141,6 +137,7 @@ public class ExpertServiceImpl implements ExpertService {
         if (!Validate.isValidDateAndTimeForSuggest(workSuggestion.getSuggestedDate(), workSuggestion.getSuggestedBeginTime(), customerOrder)) {
             throw new ValidationException("not vaild date");
         }
+        workSuggestion.setWorkduration(workSuggestion.getSuggestedBeginTime().plusHours(workSuggestion.getWorkduration().getHour()));
         workSuggestion.setExpert(expert);
         workSuggestion.setCustomerOrder(customerOrder);
         workSuggestionService.save(workSuggestion);
@@ -156,8 +153,6 @@ public class ExpertServiceImpl implements ExpertService {
     }
 
 
-    private byte[] setImageToByte(File imageFile) throws IOException {
-        return Files.readAllBytes(imageFile.toPath());
-    }
+
 }
 
