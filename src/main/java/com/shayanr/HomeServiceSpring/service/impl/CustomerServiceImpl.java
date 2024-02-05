@@ -2,8 +2,10 @@ package com.shayanr.HomeServiceSpring.service.impl;
 
 
 import com.shayanr.HomeServiceSpring.entity.business.*;
+import com.shayanr.HomeServiceSpring.entity.enumration.Confirmation;
 import com.shayanr.HomeServiceSpring.entity.enumration.OrderStatus;
 import com.shayanr.HomeServiceSpring.entity.users.Customer;
+import com.shayanr.HomeServiceSpring.entity.users.Expert;
 import com.shayanr.HomeServiceSpring.exception.NotFoundException;
 import com.shayanr.HomeServiceSpring.exception.ValidationException;
 import com.shayanr.HomeServiceSpring.repositoy.CustomerRepository;
@@ -16,6 +18,7 @@ import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -170,8 +173,42 @@ public class CustomerServiceImpl implements CustomerService {
         CustomerOrder customerOrder = orderService.findById(orderId).orElseThrow(()-> new NotFoundException("order not found"));
         customerOrder.setOrderStatus(OrderStatus.WORK_DONE);
         orderService.saveOrder(customerOrder);
+        Comment comment = new Comment();
+        customerOrder.setComment(comment);
         return customerOrder;
     }
+
+    @Override
+    @Transactional
+    public CustomerOrder paidByWallet(Integer orderId, Integer workSuggestId, LocalTime doneTime) {
+        WorkSuggestion workSuggestion = workSuggestionService.findById(workSuggestId).orElseThrow(() -> new NotFoundException("not found work suggestion"));
+        CustomerOrder order = orderService.findById(orderId).orElseThrow(() -> new NotFoundException("not found order"));
+        LocalTime workduration = workSuggestion.getWorkduration();
+        Expert expert = workSuggestion.getExpert();
+        Wallet expertWallet = expert.getWallet();
+        Customer customer = order.getCustomer();
+        Wallet customerWallet = customer.getWallet();
+        if (customerWallet.getAmount() < workSuggestion.getSuggestedPrice()+50){
+            throw new ValidationException("Your amount not enough to pay");
+        }
+        double totalPrice = customerWallet.getAmount()-workSuggestion.getSuggestedPrice();
+        Double expertMoney =  totalPrice * 0.7;
+        expertWallet.setAmount(expertMoney);
+        walletService.save(customerWallet);
+        walletService.save(expertWallet);
+        if (!IsWorkDoneInRightTime(doneTime,workduration)){
+            int extraWorkHour = doneTime.minusHours(workduration.getHour()).getHour();
+            expert.setOverallScore(-(double) extraWorkHour);
+            if (validScoreForExpert(expert)){
+                expert.setConfirmation(Confirmation.INACTIVE);
+            }
+
+        }
+        order.setOrderStatus(OrderStatus.PAID);
+        orderService.saveOrder(order);
+        return order;
+    }
+
 
     @Override
     @Transactional
@@ -187,6 +224,14 @@ public class CustomerServiceImpl implements CustomerService {
             return false;
         }
         return true;
+    }
+
+    boolean IsWorkDoneInRightTime(LocalTime doneTime,LocalTime suggestTime) {
+        return !doneTime.isAfter(suggestTime);
+    }
+
+    Boolean validScoreForExpert(Expert expert){
+        return expert.getOverallScore() <= 0;
     }
 }
 
