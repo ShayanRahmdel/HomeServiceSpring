@@ -7,6 +7,7 @@ import com.shayanr.HomeServiceSpring.entity.business.WorkSuggestion;
 import com.shayanr.HomeServiceSpring.entity.users.Customer;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,6 +36,8 @@ public interface CustomerService {
     CustomerOrder updateOrderToBegin(Integer orderId, Integer suggestionId, LocalDate date);
 
     CustomerOrder updateOrderToEnd(Integer orderId);
+
+    CustomerOrder paidByWallet(Integer orderId, Integer workSuggestId, LocalTime doneTime);
 
     void deleteAll();
 
