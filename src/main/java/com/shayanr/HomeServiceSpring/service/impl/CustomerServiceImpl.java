@@ -30,6 +30,8 @@ public class CustomerServiceImpl implements CustomerService {
 
     private final WorkSuggestionService workSuggestionService;
 
+    private final CommentService commentService;
+
 
     private final WalletService walletService;
     private final SubDutyService subDutyService;
@@ -143,7 +145,6 @@ public class CustomerServiceImpl implements CustomerService {
     @Transactional
     public CustomerOrder acceptSuggest(Integer suggestId) {
         WorkSuggestion workSuggestion = workSuggestionService.findById(suggestId).orElseThrow(() -> new NotFoundException("not found suggestion"));
-        assert workSuggestion != null;
         CustomerOrder customerOrder = workSuggestion.getCustomerOrder();
         customerOrder.setOrderStatus(OrderStatus.WAITING_FOR_THE_SPECIALIST_TO_COME);
         orderService.saveOrder(customerOrder);
@@ -157,7 +158,6 @@ public class CustomerServiceImpl implements CustomerService {
         CustomerOrder customerOrder = orderService.findById(orderId).orElseThrow(()-> new NotFoundException("Order not found"));
         WorkSuggestion workSuggestion = workSuggestionService.findById(suggestionId).orElseThrow(()-> new NotFoundException("Suggestion not found"));
 
-        assert workSuggestion != null;
         if (date.isBefore(workSuggestion.getSuggestedDate())) {
             throw new ValidationException("Date is before " + workSuggestion.getSuggestedDate());
         }
@@ -174,7 +174,9 @@ public class CustomerServiceImpl implements CustomerService {
         customerOrder.setOrderStatus(OrderStatus.WORK_DONE);
         orderService.saveOrder(customerOrder);
         Comment comment = new Comment();
+        commentService.save(comment);
         customerOrder.setComment(comment);
+
         return customerOrder;
     }
 
@@ -191,14 +193,14 @@ public class CustomerServiceImpl implements CustomerService {
         if (customerWallet.getAmount() < workSuggestion.getSuggestedPrice()+50){
             throw new ValidationException("Your amount not enough to pay");
         }
-        double totalPrice = customerWallet.getAmount()-workSuggestion.getSuggestedPrice();
-        Double expertMoney =  totalPrice * 0.7;
+        customerWallet.setAmount(customerWallet.getAmount()-workSuggestion.getSuggestedPrice());
+        Double expertMoney =  workSuggestion.getSuggestedPrice() * 0.7;
         expertWallet.setAmount(expertMoney);
         walletService.save(customerWallet);
         walletService.save(expertWallet);
         if (!IsWorkDoneInRightTime(doneTime,workduration)){
             int extraWorkHour = doneTime.minusHours(workduration.getHour()).getHour();
-            expert.setOverallScore(-(double) extraWorkHour);
+            expert.setOverallScore(expert.getOverallScore()-(double) extraWorkHour);
             if (validScoreForExpert(expert)){
                 expert.setConfirmation(Confirmation.INACTIVE);
             }
