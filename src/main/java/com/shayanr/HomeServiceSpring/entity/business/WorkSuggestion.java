@@ -2,6 +2,7 @@ package com.shayanr.HomeServiceSpring.entity.business;
 
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.shayanr.HomeServiceSpring.entity.users.Expert;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -30,10 +31,12 @@ public class WorkSuggestion  {
 
     private LocalTime workduration;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
+    @JsonIgnore
     private Expert expert;
 
     @ManyToOne()
+    @JsonIgnore
     private CustomerOrder customerOrder;
 
     public void setworkduration(){
