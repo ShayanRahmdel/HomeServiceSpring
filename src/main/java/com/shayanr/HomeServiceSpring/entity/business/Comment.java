@@ -3,6 +3,7 @@ package com.shayanr.HomeServiceSpring.entity.business;
 
 
 import com.shayanr.HomeServiceSpring.entity.users.Customer;
+import com.shayanr.HomeServiceSpring.exception.ValidationException;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -24,12 +25,19 @@ public class Comment {
     private String comment;
 
 
-    private Integer score=0;
+    private Integer score;
 
     @OneToOne(mappedBy = "comment")
     private CustomerOrder customerOrder;
 
     @ManyToOne()
     private Customer customer;
+
+    public void setScore(Integer score) {
+        if (score<=1 || score>=5){
+            throw new ValidationException("Score must be between 1 and 5");
+        }
+        this.score=score;
+    }
 
 }
