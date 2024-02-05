@@ -79,9 +79,6 @@ public class ExpertServiceImpl implements ExpertService {
         if (expert == null) {
             throw new NotFoundException("null expert");
         }
-        Wallet wallet = new Wallet();
-        wallet.setAmount(0.0);
-        expert.setWallet(wallet);
         expert.setConfirmation(Confirmation.NEW);
         expertRepository.save(expert);
         return expert;
