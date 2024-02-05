@@ -61,8 +61,8 @@ public class CustomerController {
     }
 
     @PutMapping("/accept-suggest/{suggestId}")
-    public void acceptSuggest(@PathVariable Integer suggestionId){
-        customerService.acceptSuggest(suggestionId);
+    public void acceptSuggest(@PathVariable Integer suggestId){
+        customerService.acceptSuggest(suggestId);
     }
 
     @PutMapping("/update-to-begin/{orderId}/{suggestionId}")
