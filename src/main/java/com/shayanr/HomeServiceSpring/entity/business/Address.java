@@ -2,6 +2,7 @@ package com.shayanr.HomeServiceSpring.entity.business;
 
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.shayanr.HomeServiceSpring.entity.users.Customer;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -32,10 +33,12 @@ public class Address {
 
     private String postalCode;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne()
+    @JsonIgnore
     private Customer customer;
 
     @OneToOne(mappedBy = "address")
+    @JsonIgnore
     private CustomerOrder customerOrder;
 
     public Address(String state, String city, String address, String postalCode) {
