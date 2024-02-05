@@ -2,9 +2,11 @@ package com.shayanr.HomeServiceSpring.entity.business;
 
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.shayanr.HomeServiceSpring.entity.enumration.OrderStatus;
 import com.shayanr.HomeServiceSpring.entity.users.Customer;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.FutureOrPresent;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -37,16 +39,20 @@ public class CustomerOrder {
     private OrderStatus orderStatus;
 
     @ManyToOne
+    @JsonIgnore
     private Customer customer;
 
     @ManyToOne()
+    @JsonIgnore
     private SubDuty subDuty;
 
     @OneToOne
+    @JsonIgnore
     private Comment comment;
 
 
     @OneToMany(mappedBy = "customerOrder")
+    @JsonIgnore
     private List<WorkSuggestion> workSuggestions;
 
 
