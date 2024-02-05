@@ -1,10 +1,7 @@
 package com.shayanr.HomeServiceSpring.service.impl;
 
 
-import com.shayanr.HomeServiceSpring.entity.business.Address;
-import com.shayanr.HomeServiceSpring.entity.business.CustomerOrder;
-import com.shayanr.HomeServiceSpring.entity.business.SubDuty;
-import com.shayanr.HomeServiceSpring.entity.business.WorkSuggestion;
+import com.shayanr.HomeServiceSpring.entity.business.*;
 import com.shayanr.HomeServiceSpring.entity.enumration.OrderStatus;
 import com.shayanr.HomeServiceSpring.entity.users.Customer;
 import com.shayanr.HomeServiceSpring.exception.NotFoundException;
@@ -31,10 +28,11 @@ public class CustomerServiceImpl implements CustomerService {
     private final WorkSuggestionService workSuggestionService;
 
 
-    private final DutyCategoryService dutyCategoryService;
+    private final WalletService walletService;
     private final SubDutyService subDutyService;
     private final OrderService orderService;
     private final AddressService addressService;
+
 
 
     @Override
@@ -65,6 +63,9 @@ public class CustomerServiceImpl implements CustomerService {
     @Transactional
     public Customer signUp(Customer customer) {
         customerRepository.save(customer);
+        Wallet wallet = new Wallet();
+        wallet.setAmount(0.0);
+        customer.setWallet(wallet);
         return customer;
 
     }
