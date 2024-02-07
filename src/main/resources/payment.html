@@ -18,6 +18,16 @@
     .card {
       padding: 20px;
     }
+    /*.sepah-image {*/
+    /*  text-align: center;*/
+    /*  margin-bottom: 50px;*/
+    /*}*/
+
+    /*.card-image img {*/
+    /*  width: 300px;*/
+    /*  height: 300px;*/
+    /*}*/
+
 
     .captcha {
       margin-bottom: 20px;
@@ -25,6 +35,9 @@
 
     .captcha-label {
       margin-top: 10px;
+    }
+    #submit{
+      background-color: #faa415;
     }
   </style>
 </head>
@@ -38,6 +51,9 @@
         <div class="col-md-9 col-lg-7 col-xl-5" STYLE="background-color: #c0dfef">
           <div class="card" STYLE="background-color: #e5e7fc">
             <div class="card-body">
+<!--              <div class="sepah-image">-->
+<!--                <img src="C:\Users\Shayan\Desktop\payment\sepah.jpg"  th:id="sepah-image">-->
+<!--              </div>-->
               <div class="card-title d-flex justify-content-between mb-0">
                 <p class="mb-0">$760</p>
               </div>
@@ -89,10 +105,10 @@
     captchaNumberElement.textContent = captcha;
     captchaInput.value = '';
   }
-
   generateCaptcha();
+
   const countdownElement = document.getElementById('ten-countdown');
-  let countdownTime = 10 * 60; // 10 minutes in seconds
+  let countdownTime = 10 * 60;
 
   function updateCountdown() {
     const minutes = Math.floor(countdownTime / 60);
