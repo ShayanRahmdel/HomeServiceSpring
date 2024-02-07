@@ -42,5 +42,8 @@ public interface AdminService   {
 
 
     DutyCategory updateDutyCategory(Integer dutyCategoryId,String newTitle);
+    List<Expert> searchAdminByExpert(String name, String lastName, String email, String expertise, Double minRate, Double maxRate);
+
+    List<Customer> searchAdminByCustomer(String name, String lastName, String email);
 
 }
