@@ -1,10 +1,15 @@
 package com.shayanr.HomeServiceSpring.controller;
 
+import com.shayanr.HomeServiceSpring.dto.CustomerResponseDto;
+import com.shayanr.HomeServiceSpring.dto.ExpertResponseDto;
 import com.shayanr.HomeServiceSpring.dto.SubDutyDto;
 import com.shayanr.HomeServiceSpring.entity.business.DutyCategory;
 import com.shayanr.HomeServiceSpring.entity.business.SubDuty;
 import com.shayanr.HomeServiceSpring.entity.users.Customer;
 import com.shayanr.HomeServiceSpring.entity.users.Expert;
+import com.shayanr.HomeServiceSpring.mapper.CustomerMapper;
+import com.shayanr.HomeServiceSpring.mapper.ExpertMapper;
+import com.shayanr.HomeServiceSpring.repositoy.AdminRepositoryCustom;
 import com.shayanr.HomeServiceSpring.service.AdminService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -12,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/admin")
@@ -19,6 +25,7 @@ import java.util.List;
 public class AdminController {
 
     private final AdminService adminService;
+
 
     @PostMapping("/createCategory")
     public ResponseEntity<DutyCategory> createDutyCategory(@RequestBody DutyCategory dutyCategory) {
@@ -49,46 +56,85 @@ public class AdminController {
     public List<Customer> seeCustomers() {
         return adminService.seeAllCustomer();
     }
+
     @GetMapping("/see-experts")
     public List<Expert> seeExperts() {
         return adminService.seeAllExpert();
     }
 
     @PutMapping("/update-category/{category}")
-    public ResponseEntity<DutyCategory> updateCategory(@PathVariable Integer category ,@RequestBody String newTitle){
-        return new ResponseEntity<>(adminService.updateDutyCategory(category,newTitle),HttpStatus.OK);
+    public ResponseEntity<DutyCategory> updateCategory(@PathVariable Integer category, @RequestBody String newTitle) {
+        return new ResponseEntity<>(adminService.updateDutyCategory(category, newTitle), HttpStatus.OK);
     }
 
     @PutMapping("/update-subduty/{category}")
-    public ResponseEntity<SubDuty> updateSubDuty(@PathVariable Integer category , @RequestBody SubDutyDto subDutyDto){
+    public ResponseEntity<SubDuty> updateSubDuty(@PathVariable Integer category, @RequestBody SubDutyDto subDutyDto) {
         return new ResponseEntity<>
-                (adminService.updateSubDuty(category,subDutyDto.getTitle(),
-                        subDutyDto.getDescription(),subDutyDto.getBasePrice()),HttpStatus.OK);
+                (adminService.updateSubDuty(category, subDutyDto.getTitle(),
+                        subDutyDto.getDescription(), subDutyDto.getBasePrice()), HttpStatus.OK);
 
     }
+
     @DeleteMapping("/delete-subduty/{id}")
-    public void deleteSubDuty(@PathVariable Integer id){
+    public void deleteSubDuty(@PathVariable Integer id) {
         adminService.removeSubDuty(id);
     }
 
     @DeleteMapping("/delete-category/{id}")
-    public void deleteCategory(@PathVariable Integer id){
+    public void deleteCategory(@PathVariable Integer id) {
         adminService.removeDutyCategory(id);
     }
 
     @PutMapping("/confirm-expert/{id}")
-    public void confirmExpert(@PathVariable Integer id){
+    public void confirmExpert(@PathVariable Integer id) {
         adminService.confirmExpert(id);
     }
 
-    @PostMapping("/add-epxert-to-subduty/{expertId}/{subdutyid}")
-    public void addExpertToSubDuty(@PathVariable Integer expertId,@PathVariable Integer subdutyid){
-        adminService.addExpertInSubDuty(expertId,subdutyid);
+    @DeleteMapping("/add-epxert-to-subduty/{expertId}/{subdutyid}")
+    public void addExpertToSubDuty(@PathVariable Integer expertId, @PathVariable Integer subdutyid) {
+        adminService.addExpertInSubDuty(expertId, subdutyid);
     }
 
     @PostMapping("/remove-expert-from-subduty/{expertId}/{subdutyId}")
-    public void removeExpertFromSubduty(@PathVariable Integer expertId,@PathVariable Integer subdutyId){
-        adminService.removeExpertFromSubDuty(expertId,subdutyId);
+    public void removeExpertFromSubduty(@PathVariable Integer expertId, @PathVariable Integer subdutyId) {
+        adminService.removeExpertFromSubDuty(expertId, subdutyId);
     }
 
+    @GetMapping("/search-expert")
+    public List<ExpertResponseDto> searchAdminByExpert(
+            @RequestParam(required = false) String firstName,
+            @RequestParam(required = false) String lastName,
+            @RequestParam(required = false) String email,
+            @RequestParam(required = false) String subDutyTitle,
+            @RequestParam(required = false) Double minRate,
+            @RequestParam(required = false) Double maxRate
+    ) {
+        List<Expert> experts = adminService.searchAdminByExpert(firstName, lastName, email, subDutyTitle, minRate, maxRate);
+        List<ExpertResponseDto> expertResponseDtos = ExpertMapper.INSTANCE.listModelToResponse(experts);
+        setExpertSubduty(experts, expertResponseDtos);
+        return expertResponseDtos;
+    }
+
+    @GetMapping("/search-customer")
+    public List<CustomerResponseDto> searchAdminByCustomer(@RequestParam(required = false) String firstName,
+                                                           @RequestParam(required = false) String lastName,
+                                                           @RequestParam(required = false) String email) {
+        List<Customer> customers = adminService.searchAdminByCustomer(firstName, lastName, email);
+        return CustomerMapper.INSTANCE.listModelToResponse(customers);
+
+    }
+
+    private void setExpertSubduty(List<Expert> experts, List<ExpertResponseDto> expertResponseDtos) {
+        for (ExpertResponseDto expert : expertResponseDtos) {
+            for (Expert modelExpert : experts) {
+                Set<SubDuty> subDuties = modelExpert.getSubDuties();
+                for (SubDuty subDuty : subDuties) {
+                    if (subDuty.getTitle() != null) {
+                        expert.setSubDutyTitle(subDuty.getTitle());
+                    }
+                }
+
+            }
+        }
+    }
 }
