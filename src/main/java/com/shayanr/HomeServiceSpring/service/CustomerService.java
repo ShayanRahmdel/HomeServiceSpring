@@ -2,6 +2,7 @@ package com.shayanr.HomeServiceSpring.service;
 
 
 import com.shayanr.HomeServiceSpring.entity.business.Address;
+import com.shayanr.HomeServiceSpring.entity.business.Comment;
 import com.shayanr.HomeServiceSpring.entity.business.CustomerOrder;
 import com.shayanr.HomeServiceSpring.entity.business.WorkSuggestion;
 import com.shayanr.HomeServiceSpring.entity.users.Customer;
@@ -38,6 +39,8 @@ public interface CustomerService {
     CustomerOrder updateOrderToEnd(Integer orderId);
 
     CustomerOrder paidByWallet(Integer orderId, Integer workSuggestId, LocalTime doneTime);
+
+    Comment createComment(Integer orderId,Integer score,String massage,Integer suggestionId);
 
     void deleteAll();
 
