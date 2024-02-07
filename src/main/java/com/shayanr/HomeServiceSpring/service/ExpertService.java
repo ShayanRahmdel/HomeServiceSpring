@@ -2,6 +2,7 @@ package com.shayanr.HomeServiceSpring.service;
 
 
 
+import com.shayanr.HomeServiceSpring.entity.business.Comment;
 import com.shayanr.HomeServiceSpring.entity.business.CustomerOrder;
 import com.shayanr.HomeServiceSpring.entity.business.WorkSuggestion;
 import com.shayanr.HomeServiceSpring.entity.users.Expert;
@@ -32,6 +33,8 @@ public interface ExpertService {
     void saveImage(String imagePath,Integer expertId) throws IOException;
 
     WorkSuggestion createSuggest(WorkSuggestion workSuggestion, Integer orderId, Integer expertId);
+
+    Integer seeScoreOrder(Integer orderId);
 
     void deleteAll();
 
