@@ -211,6 +211,21 @@ public class CustomerServiceImpl implements CustomerService {
         return order;
     }
 
+    @Override
+    public Comment createComment(Integer orderId,Integer score,String massage,Integer suggestionId) {
+        CustomerOrder order = orderService.findById(orderId).orElseThrow(() -> new NotFoundException("Not found order"));
+        Customer customer = order.getCustomer();
+        WorkSuggestion workSuggestion = workSuggestionService.findById(suggestionId).orElseThrow(() -> new NotFoundException("Not found suggestion"));
+        Expert expert = workSuggestion.getExpert();
+        expert.setOverallScore((double) score);
+        Comment comment = order.getComment();
+        comment.setCustomer(customer);
+        comment.setComment(massage);
+        comment.setScore(score);
+        commentService.save(comment);
+        return comment;
+    }
+
 
     @Override
     @Transactional
