@@ -1,5 +1,6 @@
 package com.shayanr.HomeServiceSpring.dto;
 
+import com.shayanr.HomeServiceSpring.entity.business.SubDuty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,5 +19,7 @@ public class ExpertResponseDto {
     private String email;
 
     private Double overallScore;
+
+    private String subDutyTitle;
 
 }
