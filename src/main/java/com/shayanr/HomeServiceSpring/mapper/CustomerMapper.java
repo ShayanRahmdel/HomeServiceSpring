@@ -6,6 +6,8 @@ import com.shayanr.HomeServiceSpring.entity.users.Customer;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
+import java.util.List;
+
 @Mapper
 public interface CustomerMapper {
 
@@ -13,5 +15,7 @@ public interface CustomerMapper {
 
     Customer requestDtoToModel(CustomerRequestDto customerRequestDto);
     CustomerResponseDto modelToResponse(Customer customer);
+
+    List<CustomerResponseDto> listModelToResponse(List<Customer> customers);
 
 }
