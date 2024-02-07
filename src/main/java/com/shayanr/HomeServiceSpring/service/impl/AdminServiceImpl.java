@@ -13,6 +13,7 @@ import com.shayanr.HomeServiceSpring.exception.IsEmptyFieldException;
 import com.shayanr.HomeServiceSpring.exception.NotFoundException;
 import com.shayanr.HomeServiceSpring.exception.ValidationException;
 import com.shayanr.HomeServiceSpring.repositoy.AdminRepository;
+import com.shayanr.HomeServiceSpring.repositoy.AdminRepositoryCustom;
 import com.shayanr.HomeServiceSpring.service.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +23,7 @@ import java.util.*;
 
 @Service
 @RequiredArgsConstructor
-public class AdminServiceImpl implements AdminService {
+public class AdminServiceImpl implements AdminService, AdminRepositoryCustom {
 
     private final AdminRepository adminRepository;
     private final DutyCategoryService dutyCategoryService;
@@ -247,5 +248,15 @@ public class AdminServiceImpl implements AdminService {
         dutyCategory.setTitle(newTitle);
         return dutyCategoryService.save(dutyCategory);
 
+    }
+
+    @Override
+    public List<Expert> searchAdminByExpert(String name, String lastName, String email, String expertise, Double minRate, Double maxRate) {
+        return adminRepository.searchAdminByExpert(name, lastName, email,expertise,minRate,maxRate);
+    }
+
+    @Override
+    public List<Customer> searchAdminByCustomer(String name, String lastName, String email) {
+        return adminRepository.searchAdminByCustomer(name, lastName, email);
     }
 }
