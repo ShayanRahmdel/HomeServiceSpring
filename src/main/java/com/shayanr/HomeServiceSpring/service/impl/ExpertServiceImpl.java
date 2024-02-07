@@ -1,6 +1,7 @@
 package com.shayanr.HomeServiceSpring.service.impl;
 
 
+import com.shayanr.HomeServiceSpring.entity.business.Comment;
 import com.shayanr.HomeServiceSpring.entity.business.CustomerOrder;
 import com.shayanr.HomeServiceSpring.entity.business.Wallet;
 import com.shayanr.HomeServiceSpring.entity.business.WorkSuggestion;
@@ -141,6 +142,13 @@ public class ExpertServiceImpl implements ExpertService {
         customerOrder.setOrderStatus(OrderStatus.WAITING_EXPERT_SELECTION);
         orderService.saveOrder(customerOrder);
         return workSuggestion;
+    }
+
+    @Override
+    public Integer seeScoreOrder(Integer orderId) {
+        CustomerOrder order = orderService.findById(orderId).orElseThrow(() -> new NotFoundException("not found order"));
+        Comment comment = order.getComment();
+        return comment.getScore();
     }
 
     @Override
