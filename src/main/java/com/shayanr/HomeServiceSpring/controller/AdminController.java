@@ -90,12 +90,12 @@ public class AdminController {
         adminService.confirmExpert(id);
     }
 
-    @DeleteMapping("/add-epxert-to-subduty/{expertId}/{subdutyid}")
+    @PostMapping("/add-epxert-to-subduty/{expertId}/{subdutyid}")
     public void addExpertToSubDuty(@PathVariable Integer expertId, @PathVariable Integer subdutyid) {
         adminService.addExpertInSubDuty(expertId, subdutyid);
     }
 
-    @PostMapping("/remove-expert-from-subduty/{expertId}/{subdutyId}")
+    @DeleteMapping("/remove-expert-from-subduty/{expertId}/{subdutyId}")
     public void removeExpertFromSubduty(@PathVariable Integer expertId, @PathVariable Integer subdutyId) {
         adminService.removeExpertFromSubDuty(expertId, subdutyId);
     }
