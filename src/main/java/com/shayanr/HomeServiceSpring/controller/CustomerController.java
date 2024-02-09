@@ -6,6 +6,8 @@ import com.shayanr.HomeServiceSpring.entity.business.Comment;
 import com.shayanr.HomeServiceSpring.entity.business.CustomerOrder;
 import com.shayanr.HomeServiceSpring.entity.business.WorkSuggestion;
 import com.shayanr.HomeServiceSpring.entity.users.Customer;
+
+import com.shayanr.HomeServiceSpring.exception.ValidationException;
 import com.shayanr.HomeServiceSpring.mapper.CommentMapper;
 import com.shayanr.HomeServiceSpring.mapper.CustomerMapper;
 import com.shayanr.HomeServiceSpring.mapper.OrderMapper;
@@ -15,6 +17,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -97,8 +100,12 @@ public class CustomerController {
     }
 
     @PostMapping("/online-payment")
-    public String payOnline(@RequestBody PaymentDto paymentDto){
-        return paymentDto.toString();
+    public PaymentDto processPayment(@Valid @RequestBody PaymentDto paymentDto,BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            throw new ValidationException("Invalid payment details");
+        }
+        System.out.println("successful");
+        return paymentDto;
     }
 
     @PostMapping("/create-comment/{orderId}/{suggestionId}")
