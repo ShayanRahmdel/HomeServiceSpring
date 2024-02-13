@@ -2,164 +2,171 @@
 <html xmlns:th="https://www.thymeleaf.org" lang="en">
 
 <head>
-  <meta charset="UTF-8">
-  <title>Title</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <style>
-    body {
-      background-color: #c0dfef;
-    }
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #c0dfef;
+        }
 
-    .container {
-      margin-top: 30px;
-      margin-bottom: 30px;
-    }
+        .container {
+            margin-top: 30px;
+            margin-bottom: 30px;
+        }
 
-    .card {
-      padding: 20px;
-    }
-    /*.sepah-image {*/
-    /*  text-align: center;*/
-    /*  margin-bottom: 50px;*/
-    /*}*/
+        .card {
+            padding: 20px;
+        }
 
-    /*.card-image img {*/
-    /*  width: 300px;*/
-    /*  height: 300px;*/
-    /*}*/
+        /*.sepah-image {*/
+        /*  text-align: center;*/
+        /*  margin-bottom: 50px;*/
+        /*}*/
+
+        /*.card-image img {*/
+        /*  width: 300px;*/
+        /*  height: 300px;*/
+        /*}*/
 
 
-    .captcha {
-      margin-bottom: 20px;
-    }
+        .captcha {
+            margin-bottom: 20px;
+        }
 
-    .captcha-label {
-      margin-top: 10px;
-    }
-    #submit{
-      background-color: #faa415;
-    }
-  </style>
+        .captcha-label {
+            margin-top: 10px;
+        }
+
+        #submit {
+            background-color: #faa415;
+        }
+    </style>
 </head>
 
 <body>
 <div id="ten-countdown"></div>
 <div method="post">
-  <section>
-    <div class="container py-5">
-      <div class="row d-flex justify-content-center">
-        <div class="col-md-9 col-lg-7 col-xl-5" STYLE="background-color: #c0dfef">
-          <div class="card" STYLE="background-color: #e5e7fc">
-            <div class="card-body">
-<!--              <div class="sepah-image">-->
-<!--                <img src="C:\Users\Shayan\Desktop\payment\sepah.jpg"  th:id="sepah-image">-->
-<!--              </div>-->
-              <div class="card-title d-flex justify-content-between mb-0">
-                <p class="mb-0">$760</p>
-              </div>
-            </div>
-            <div class="form-outline mb-3">
-              <input type="text" id="cardNumber" class="form-control" placeholder="1234567812345678" />
-              <label class="form-label" for="cardNumber">Card Number</label>
-            </div>
+    <section>
+        <div class="container py-5">
+            <div class="row d-flex justify-content-center">
+                <div class="col-md-9 col-lg-7 col-xl-5" STYLE="background-color: #c0dfef">
+                    <div class="card" STYLE="background-color: #e5e7fc">
+                        <div class="card-body">
+                            <!--              <div class="sepah-image">-->
+                            <!--                <img src="C:\Users\Shayan\Desktop\payment\sepah.jpg"  th:id="sepah-image">-->
+                            <!--              </div>-->
+                            <div class="card-title d-flex justify-content-between mb-0">
+                                <p class="mb-0">$760</p>
+                            </div>
+                        </div>
+                        <div class="form-outline mb-3">
+                            <input type="text" id="cardNumber" class="form-control" placeholder="1234567812345678"/>
+                            <label class="form-label" for="cardNumber">Card Number</label>
+                        </div>
 
-            <div class="col-6">
-              <div class="form-outline">
-                <input type="password" maxlength="6" minlength="3" id="cvv" class="form-control"
-                       placeholder="Cvv2" />
-                <label class="form-label" for="cvv">Cvv</label>
-                <input type="text" id="mm" class="form-control" placeholder="MM" />
-                <label class="form-label" for="mm">Month</label>
-                <input type="text" id="yy" class="form-control" placeholder="YY" />
-                <label class="form-label" for="yy">Year</label>
-                <input type="password" maxlength="8" minlength="4" id="password" class="form-control"
-                       placeholder="Password" />
-                <label class="form-label" for="password">Password</label>
-              </div>
+                        <div class="col-6">
+                            <div class="form-outline">
+                                <input type="password" maxlength="6" minlength="3" id="cvv" class="form-control"
+                                       placeholder="Cvv2"/>
+                                <label class="form-label" for="cvv">Cvv</label>
+                                <input type="text" id="mm" class="form-control" placeholder="MM"/>
+                                <label class="form-label" for="mm">Month</label>
+                                <input type="text" id="yy" class="form-control" placeholder="YY"/>
+                                <label class="form-label" for="yy">Year</label>
+                                <input type="password" maxlength="8" minlength="4" id="password" class="form-control"
+                                       placeholder="Password"/>
+                                <label class="form-label" for="password">Password</label>
+                            </div>
 
-                <div class="card-body">
-                  <p class="mb-4">Your payment details</p>
-                  <div class="captcha">
-                    <p id="captcha-number" class="captcha-number"></p>
-                    <p class="captcha-label">Enter Captcha:</p>
-                    <input type="text" id="captcha-input" class="form-control" placeholder="Enter Captcha" />
-                  </div>
-                  <div class="rounded-bottom" >
-                  <button type="submit" value="submit" id="submit" class="btn btn-info btn-block">Pay now</button>
+                            <div class="card-body">
+                                <p class="mb-4">Your payment details</p>
+                                <div class="captcha">
+                                    <p id="captcha-number" class="captcha-number"></p>
+                                    <p class="captcha-label">Enter Captcha:</p>
+                                    <input type="text" id="captcha-input" class="form-control"
+                                           placeholder="Enter Captcha"/>
+                                </div>
+                                <div class="rounded-bottom">
+                                    <button type="submit" value="submit" id="submit" class="btn btn-info btn-block">Pay
+                                        now
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-              </div>
             </div>
-          </div>
         </div>
-      </div>
-    </div>
-  </section>
+    </section>
 </div>
 
 <script>
 
-  function generateCaptcha() {
-    const captchaNumberElement = document.getElementById('captcha-number');
-    const captchaInput = document.getElementById('captcha-input');
-    const captcha = Math.floor(1000 + Math.random() * 9000); // Generate a 4-digit random number
-    captchaNumberElement.textContent = captcha;
-    captchaInput.value = '';
-  }
-  generateCaptcha();
-
-  const countdownElement = document.getElementById('ten-countdown');
-  let countdownTime = 10 * 60;
-
-  function updateCountdown() {
-    const minutes = Math.floor(countdownTime / 60);
-    const seconds = countdownTime % 60;
-    countdownElement.innerHTML = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-
-    if (countdownTime <= 0) {
-      document.getElementById('submit').disabled = true; // Disable submit button
-    } else {
-      countdownTime--;
-      setTimeout(updateCountdown, 1000);
+    function generateCaptcha() {
+        const captchaNumberElement = document.getElementById('captcha-number');
+        const captchaInput = document.getElementById('captcha-input');
+        const captcha = Math.floor(1000 + Math.random() * 9000); // Generate a 4-digit random number
+        captchaNumberElement.textContent = captcha;
+        captchaInput.value = '';
     }
-  }
 
-  updateCountdown();
+    generateCaptcha();
 
-  document.getElementById('submit').addEventListener('click', function () {
-    const cardNumber = document.getElementById("cardNumber").value;
-    const cvv = document.getElementById("cvv").value;
-    const month = document.getElementById("mm").value;
-    const year = document.getElementById("yy").value;
-    const password = document.getElementById("password").value;
+    const countdownElement = document.getElementById('ten-countdown');
+    let countdownTime = 10 * 60;
 
-    const url = 'http://localhost:8080/customer/online-payment';
-    const data = {
-      cardNumber,
-      cvv,
-      month,
-      year,
-      password
-    };
+    function updateCountdown() {
+        const minutes = Math.floor(countdownTime / 60);
+        const seconds = countdownTime % 60;
+        countdownElement.innerHTML = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 
-    fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(data)
-    })
+        if (countdownTime <= 0) {
+            document.getElementById('submit').disabled = true;
+            window.close();
+        } else {
+            countdownTime--;
+            setTimeout(updateCountdown, 1000);
+        }
+    }
+
+    updateCountdown();
+
+    document.getElementById('submit').addEventListener('click', function () {
+        const cardNumber = document.getElementById("cardNumber").value;
+        const cvv = document.getElementById("cvv").value;
+        const month = document.getElementById("mm").value;
+        const year = document.getElementById("yy").value;
+        const password = document.getElementById("password").value;
+
+        const url = 'http://localhost:8080/customer/online-payment';
+        const data = {
+            cardNumber,
+            cvv,
+            month,
+            year,
+            password
+        };
+
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
             .then(response => {
-              if (response.ok) {
-                console.log('success');
-                console.log(response);
-              } else {
-                console.log('Request failed: ' + response.status);
-              }
+                if (response.ok) {
+                    console.log('success');
+                    console.log(response);
+                } else {
+                    console.log('Request failed: ' + response.status);
+                }
             })
             .catch(error => {
-              console.log('An error occurred: ' + error);
+                console.log('An error occurred: ' + error);
             });
-  });
+    });
 
 </script>
 
