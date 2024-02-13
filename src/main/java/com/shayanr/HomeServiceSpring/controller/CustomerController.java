@@ -1,5 +1,6 @@
 package com.shayanr.HomeServiceSpring.controller;
 
+import com.google.code.kaptcha.impl.DefaultKaptcha;
 import com.shayanr.HomeServiceSpring.dto.*;
 import com.shayanr.HomeServiceSpring.entity.business.Address;
 import com.shayanr.HomeServiceSpring.entity.business.Comment;
@@ -13,16 +14,22 @@ import com.shayanr.HomeServiceSpring.mapper.CustomerMapper;
 import com.shayanr.HomeServiceSpring.mapper.OrderMapper;
 import com.shayanr.HomeServiceSpring.mapper.SuggestionMapper;
 import com.shayanr.HomeServiceSpring.service.CustomerService;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Random;
 
 @RestController
 @RequestMapping("/customer")
@@ -31,6 +38,7 @@ import java.util.List;
 public class CustomerController {
 
     private final CustomerService customerService;
+    private final DefaultKaptcha captchaProducer;
 
     @PostMapping("/register")
     public ResponseEntity<CustomerResponseDto> registerCustomer(@Valid @RequestBody CustomerRequestDto customerRequestDto) {
@@ -115,6 +123,18 @@ public class CustomerController {
         Comment comment = customerService.createComment(orderId, dto.getScore(), dto.getComment(), suggestionId);
         return CommentMapper.INSTANCE.modelToDto(comment);
 
+    }
+    @GetMapping("/captcha")
+    public void getCaptcha(HttpServletResponse response) throws Exception {
+        response.setContentType("image/jpeg");
+        String capText = captchaProducer.createText();
+        BufferedImage bi = captchaProducer.createImage(capText);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ImageIO.write(bi, "jpg", baos);
+        byte[] captchaBytes = baos.toByteArray();
+        response.getOutputStream().write(captchaBytes);
+        response.getOutputStream().flush();
+        response.getOutputStream().close();
     }
 }
 
