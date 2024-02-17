@@ -19,7 +19,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,7 +28,7 @@ import java.io.ByteArrayOutputStream;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.Random;
+
 
 @RestController
 @RequestMapping("/customer")
@@ -75,7 +74,7 @@ public class CustomerController {
 
     @GetMapping("/see-suggest-by-score/{customerId}")
     public List<SuggestionResponseDto> seeSuggestByScore(@PathVariable Integer customerId) {
-        List<WorkSuggestion> workSuggestions = customerService.seeSuggestionsByPrice(customerId);
+        List<WorkSuggestion> workSuggestions = customerService.seeSuggestionsByExpertScore(customerId);
         return SuggestionMapper.INSTANCE.listModeltoResponse(workSuggestions);
     }
 
@@ -93,17 +92,16 @@ public class CustomerController {
         return new ResponseEntity<>(OrderMapper.INSTANCE.modelToResponse(customerOrder), HttpStatus.OK);
     }
 
-    @PutMapping("/update-to-end/{orderId}")
-    public ResponseEntity<OrderResponseDto> updateToEnd(@PathVariable Integer orderId) {
-        CustomerOrder customerOrder = customerService.updateOrderToEnd(orderId);
+    @PutMapping("/update-to-end/{orderId}/{suggestionId}")
+    public ResponseEntity<OrderResponseDto> updateToEnd(@PathVariable Integer orderId,@PathVariable Integer suggestionId,@RequestBody LocalTime doneTime) {
+        CustomerOrder customerOrder = customerService.updateOrderToEnd(orderId,suggestionId,doneTime);
         return new ResponseEntity<>(OrderMapper.INSTANCE.modelToResponse(customerOrder), HttpStatus.OK);
     }
 
     @PostMapping("/payment-by-wallet/{orderId}/{suggestionId}")
-    public ResponseEntity<OrderResponseDto> payedByWallet(@RequestBody LocalTime doneTime,
-                                                       @PathVariable Integer orderId,
+    public ResponseEntity<OrderResponseDto> payedByWallet(@PathVariable Integer orderId,
                                                        @PathVariable Integer suggestionId) {
-        CustomerOrder customerOrder = customerService.paidByWallet(orderId, suggestionId, doneTime);
+        CustomerOrder customerOrder = customerService.paidByWallet(orderId, suggestionId);
         return new ResponseEntity<>(OrderMapper.INSTANCE.modelToResponse(customerOrder), HttpStatus.OK);
     }
 

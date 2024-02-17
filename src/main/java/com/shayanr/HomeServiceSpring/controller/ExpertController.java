@@ -10,6 +10,8 @@ import com.shayanr.HomeServiceSpring.mapper.ExpertMapper;
 import com.shayanr.HomeServiceSpring.mapper.OrderMapper;
 import com.shayanr.HomeServiceSpring.mapper.SuggestionMapper;
 import com.shayanr.HomeServiceSpring.service.ExpertService;
+import jakarta.servlet.annotation.MultipartConfig;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,12 +32,12 @@ public class ExpertController {
     private final ExpertService expertService;
 
     @PostMapping("/register")
-    public ResponseEntity<ExpertResponseDto> register(@RequestBody ExpertRequestDto requestDto) throws IOException {
+    public ResponseEntity<ExpertResponseDto> register(@Valid @ModelAttribute ExpertRequestDto requestDto) throws IOException {
         Expert expert = ExpertMapper.INSTANCE.requestDtoToModel(requestDto);
-        expert.setImage(setPath(requestDto.getPath()));
-        expertService.signUp(expert);
-        ExpertResponseDto expertResponseDto = ExpertMapper.INSTANCE.modelToResponse(expert);
-        return new ResponseEntity<>(expertResponseDto, HttpStatus.CREATED);
+        expert.setImage(requestDto.getImage().getBytes());
+        ExpertResponseDto expertResponseDto = ExpertMapper.INSTANCE.modelToResponse(expertService.signUp(expert));
+        return new ResponseEntity<>(expertResponseDto,HttpStatus.CREATED);
+
     }
 
     @PutMapping("/change-password/{customerId}")

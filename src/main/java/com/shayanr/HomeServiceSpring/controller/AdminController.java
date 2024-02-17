@@ -9,7 +9,6 @@ import com.shayanr.HomeServiceSpring.entity.users.Customer;
 import com.shayanr.HomeServiceSpring.entity.users.Expert;
 import com.shayanr.HomeServiceSpring.mapper.CustomerMapper;
 import com.shayanr.HomeServiceSpring.mapper.ExpertMapper;
-import com.shayanr.HomeServiceSpring.repositoy.AdminRepositoryCustom;
 import com.shayanr.HomeServiceSpring.service.AdminService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -68,10 +67,11 @@ public class AdminController {
     }
 
     @PutMapping("/update-subduty/{category}")
-    public ResponseEntity<SubDuty> updateSubDuty(@PathVariable Integer category, @RequestBody SubDutyDto subDutyDto) {
+    public ResponseEntity<Void> updateSubDuty(@PathVariable Integer category, @RequestBody SubDutyDto subDutyDto) {
+        adminService.updateSubDuty(category, subDutyDto.getTitle(),
+                subDutyDto.getDescription(), subDutyDto.getBasePrice());
         return new ResponseEntity<>
-                (adminService.updateSubDuty(category, subDutyDto.getTitle(),
-                        subDutyDto.getDescription(), subDutyDto.getBasePrice()), HttpStatus.OK);
+                (null, HttpStatus.OK);
 
     }
 

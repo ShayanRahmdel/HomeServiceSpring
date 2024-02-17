@@ -4,8 +4,9 @@ package com.shayanr.HomeServiceSpring.service;
 
 import com.shayanr.HomeServiceSpring.entity.business.SubDuty;
 
+
 import java.util.List;
-import java.util.Optional;
+
 
 public interface SubDutyService {
 
@@ -13,11 +14,16 @@ public interface SubDutyService {
 
     void deleteById(Integer subDutyId);
 
-    Optional<SubDuty> findById(Integer subDutyId);
+    SubDuty findById(Integer subDutyId);
+
+    SubDuty updateSubDutyById( Integer id, String title
+            ,String description,Double basePrice);
 
     List<SubDuty> findAll();
 
     List<SubDuty> seeSubDutyByCategory(Integer category);
+
+    Boolean existsByTitle(String title);
 
     void deleteAll();
 

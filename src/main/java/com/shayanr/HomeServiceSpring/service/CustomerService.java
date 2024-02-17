@@ -10,11 +10,11 @@ import com.shayanr.HomeServiceSpring.entity.users.Customer;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.Optional;
+
 
 public interface CustomerService {
 
-    Optional<Customer> findById(Integer customerId);
+    Customer findById(Integer customerId);
 
     void deleteById(Integer customerId);
 
@@ -36,9 +36,9 @@ public interface CustomerService {
 
     CustomerOrder updateOrderToBegin(Integer orderId, Integer suggestionId, LocalDate date);
 
-    CustomerOrder updateOrderToEnd(Integer orderId);
+    CustomerOrder updateOrderToEnd(Integer orderId, Integer workSuggestId, LocalTime doneTime);
 
-    CustomerOrder paidByWallet(Integer orderId, Integer workSuggestId, LocalTime doneTime);
+    CustomerOrder paidByWallet(Integer orderId, Integer workSuggestId);
 
     Comment createComment(Integer orderId,Integer score,String massage,Integer suggestionId);
 

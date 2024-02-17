@@ -10,8 +10,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
+
 
 @Service
 @RequiredArgsConstructor
@@ -30,20 +29,14 @@ public class WorkSuggestionServiceImpl implements WorkSuggestionService {
     }
 
     @Override
-    public Optional<WorkSuggestion> findById(Integer workSuggestionId) {
-        Optional<WorkSuggestion> workSuggestion = workSuggestionRepository.findById(workSuggestionId);
-        if (workSuggestion.isEmpty()) {
-            throw new NotFoundException("workSuggestion is null");
-        }
-        return workSuggestion;
+    public WorkSuggestion findById(Integer workSuggestionId) {
+     return workSuggestionRepository.findById(workSuggestionId).orElseThrow(()-> new NotFoundException("Work suggestion not found"));
     }
 
     @Override
     @Transactional
     public void deleteById(Integer workSuggestionId) {
-            if (workSuggestionId==null){
-                throw new NotFoundException("cant find workSuggestion");
-            }
+            findById(workSuggestionId);
             workSuggestionRepository.deleteById(workSuggestionId);
     }
 

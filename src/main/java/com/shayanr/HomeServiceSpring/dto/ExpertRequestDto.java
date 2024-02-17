@@ -22,18 +22,18 @@ import java.time.LocalTime;
 @Getter
 @Setter
 public class ExpertRequestDto {
-    @NotBlank
+
     @Pattern(regexp = "^[A-Z](?=.{1,29}$)[A-Za-z]*(?:\\h+[A-Z][A-Za-z]*)*$")
     private String firstName;
 
-    @NotBlank
+
     @Pattern(regexp = "^[A-Z](?=.{1,29}$)[A-Za-z]*(?:\\h+[A-Z][A-Za-z]*)*$")
     private String lastName;
 
     @Email
     private String email;
 
-    @NotBlank
+
     @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8}$")
     private String password;
 
@@ -43,7 +43,9 @@ public class ExpertRequestDto {
 
     private LocalTime signUpTime;
 
-    private String path;
+    private MultipartFile image;
+
+
 
 
 

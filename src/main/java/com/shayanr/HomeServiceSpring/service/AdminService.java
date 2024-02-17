@@ -26,7 +26,6 @@ public interface AdminService   {
     Expert confirmExpert(Integer expertId);
     Expert removeExpertFromSubDuty(Integer expertId,Integer subDutyId);
 
-    boolean validateExpertOneDutyCategory(Expert expert,Integer newDutyCategory);
 
     void removeDutyCategory(Integer dutyCategoryId);
 

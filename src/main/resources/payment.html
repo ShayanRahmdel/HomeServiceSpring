@@ -138,7 +138,16 @@
         const month = document.getElementById("mm").value;
         const year = document.getElementById("yy").value;
         const password = document.getElementById("password").value;
+        const captchaInput = document.getElementById("captcha-input").value;
 
+        const captchaNumberElement = document.getElementById('captcha-number');
+        const captchaNumber = captchaNumberElement.textContent;
+
+        if (captchaInput !== captchaNumber) {
+            alert("Invalid captcha. Please try again.");
+            generateCaptcha();
+            return;
+        }
         const url = 'http://localhost:8080/customer/online-payment';
         const data = {
             cardNumber,

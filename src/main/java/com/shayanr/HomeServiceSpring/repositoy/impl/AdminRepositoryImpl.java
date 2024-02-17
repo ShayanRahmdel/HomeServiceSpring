@@ -19,7 +19,8 @@ public class AdminRepositoryImpl implements AdminRepositoryCustom {
     private final EntityManager em;
 
     @Override
-    public List<Expert> searchAdminByExpert(String firstName, String lastName, String email, String expertise, Double minRate, Double maxRate) {
+    public List<Expert> searchAdminByExpert(String firstName, String lastName, String email,
+                                            String expertise, Double minRate, Double maxRate) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Expert> cq = cb.createQuery(Expert.class);
         Root<Expert> expert = cq.from(Expert.class);

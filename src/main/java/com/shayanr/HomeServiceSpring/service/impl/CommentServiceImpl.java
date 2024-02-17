@@ -7,7 +7,7 @@ import com.shayanr.HomeServiceSpring.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+
 
 @Service
 @RequiredArgsConstructor
@@ -20,12 +20,8 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public Optional<Comment> findById(Integer id) {
-        Optional<Comment> commentOptional = commentRepository.findById(id);
-        if (commentOptional.isEmpty()) {
-            throw new NotFoundException("Comment not found");
-        }
-        return commentOptional;
+    public Comment findById(Integer id) {
+        return commentRepository.findById(id).orElseThrow(()->new NotFoundException("Not found comment"));
     }
 }
 

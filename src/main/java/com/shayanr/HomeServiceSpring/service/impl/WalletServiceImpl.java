@@ -7,7 +7,7 @@ import com.shayanr.HomeServiceSpring.service.WalletService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+
 
 @Service
 @RequiredArgsConstructor
@@ -20,11 +20,7 @@ public class WalletServiceImpl implements WalletService {
     }
 
     @Override
-    public Optional<Wallet> findById(Integer id) {
-        Optional<Wallet> wallet = walletRepository.findById(id);
-        if (wallet.isEmpty()){
-            throw new NotFoundException("Wallet not found");
-        }
-        return wallet;
+    public Wallet findById(Integer id) {
+        return walletRepository.findById(id).orElseThrow(() -> new NotFoundException("Wallet not found"));
     }
 }

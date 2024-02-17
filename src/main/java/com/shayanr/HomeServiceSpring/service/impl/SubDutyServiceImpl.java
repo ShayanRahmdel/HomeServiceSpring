@@ -41,14 +41,13 @@ public class SubDutyServiceImpl implements SubDutyService {
     }
 
     @Override
-    public Optional<SubDuty> findById(Integer subDutyId) {
-        Optional<SubDuty> subDuty = subDutyRepository.findById(subDutyId);
-        if (subDuty.isEmpty()) {
-            throw new NotFoundException("cant find subduty");
-        }
-        return subDuty;
+    public SubDuty findById(Integer subDutyId) {
+        return subDutyRepository.findById(subDutyId).orElseThrow(()-> new NotFoundException("cant find subduty"));
+    }
 
-
+    @Override
+    public SubDuty updateSubDutyById(Integer id, String title, String description, Double basePrice) {
+        return  subDutyRepository.updateSubDutyById(id, title, description, basePrice);
     }
 
     @Override
@@ -58,16 +57,12 @@ public class SubDutyServiceImpl implements SubDutyService {
 
     @Override
     public List<SubDuty> seeSubDutyByCategory(Integer category) {
-        List<SubDuty> subDutyList = new ArrayList<>();
-        Collection<SubDuty> allSubDuty = subDutyRepository.findAll();
-        for (SubDuty subDuty : allSubDuty) {
-            if (Objects.equals(subDuty.getDutyCategory().getId(), category)) {
-                subDutyList.add(subDuty);
-            }
+    return subDutyRepository.seeSubDutyByCategory(category);
+    }
 
-        }
-        return subDutyList;
-
+    @Override
+    public Boolean existsByTitle(String title) {
+        return subDutyRepository.existsByTitle(title);
     }
 
     @Override

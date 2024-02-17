@@ -30,7 +30,5 @@ public class Wallet {
     @OneToOne(mappedBy = "wallet")
     private Expert expert;
 
-    public Wallet(Double amount) {
-        this.amount = amount;
-    }
+
 }
