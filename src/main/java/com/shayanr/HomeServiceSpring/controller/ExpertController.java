@@ -4,13 +4,11 @@ import com.shayanr.HomeServiceSpring.dto.*;
 import com.shayanr.HomeServiceSpring.entity.business.CustomerOrder;
 import com.shayanr.HomeServiceSpring.entity.business.WorkSuggestion;
 import com.shayanr.HomeServiceSpring.entity.users.Expert;
-import com.shayanr.HomeServiceSpring.exception.NotFoundException;
 import com.shayanr.HomeServiceSpring.exception.ValidationException;
-import com.shayanr.HomeServiceSpring.mapper.ExpertMapper;
+import com.shayanr.HomeServiceSpring.mapper.ExperMapperCustom;
 import com.shayanr.HomeServiceSpring.mapper.OrderMapper;
 import com.shayanr.HomeServiceSpring.mapper.SuggestionMapper;
 import com.shayanr.HomeServiceSpring.service.ExpertService;
-import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,11 +16,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.List;
+import java.util.Objects;
+
 
 @RestController
 @RequestMapping("/expert")
@@ -30,14 +27,13 @@ import java.util.List;
 public class ExpertController {
 
     private final ExpertService expertService;
+    private final ExperMapperCustom experMapperCustom;
 
     @PostMapping("/register")
-    public ResponseEntity<ExpertResponseDto> register(@Valid @ModelAttribute ExpertRequestDto requestDto) throws IOException {
-        Expert expert = ExpertMapper.INSTANCE.requestDtoToModel(requestDto);
-        expert.setImage(requestDto.getImage().getBytes());
-        ExpertResponseDto expertResponseDto = ExpertMapper.INSTANCE.modelToResponse(expertService.signUp(expert));
-        return new ResponseEntity<>(expertResponseDto,HttpStatus.CREATED);
-
+    public ResponseEntity<ExpertResponseCustomDto> register(@Valid @ModelAttribute ExpertRequestDto requestDto) throws IOException {
+        validateImage(requestDto.getImage());
+        Expert expert =experMapperCustom.requestDtoToModel(requestDto);
+        return new ResponseEntity<>(experMapperCustom.modelToResponseCustom(expertService.signUp(expert)),HttpStatus.CREATED);
     }
 
     @PutMapping("/change-password/{customerId}")
@@ -71,18 +67,19 @@ public class ExpertController {
     }
 
 
-    private byte[] setPath(String path) throws IOException {
-        if (path.isEmpty()) {
-            throw new NotFoundException("Not found path");
+    private void validateImage(MultipartFile image) throws IOException {
+        if (image == null) {
+            throw new ValidationException("Image is required.");
         }
-        if (!path.toLowerCase().endsWith("jpg")) {
-            throw new ValidationException("check format");
+
+        String originalFilename = image.getOriginalFilename();
+        if (originalFilename == null || !originalFilename.toLowerCase().endsWith(".jpg")) {
+            throw new ValidationException("Only JPEG images with the .jpg extension are allowed.");
         }
-        byte[] image = Files.readAllBytes(Paths.get(path));
-        if (image.length > 300 * 1024) {
-            throw new ValidationException("your picture is too large");
+
+        if (image.getSize() > 300 * 1024) {
+            throw new ValidationException("Image size cannot exceed 300KB.");
         }
-        return image;
     }
 
 }
