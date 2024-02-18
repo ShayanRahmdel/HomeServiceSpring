@@ -6,6 +6,7 @@ import com.shayanr.HomeServiceSpring.entity.enumration.Confirmation;
 import com.shayanr.HomeServiceSpring.entity.enumration.OrderStatus;
 import com.shayanr.HomeServiceSpring.entity.users.Customer;
 import com.shayanr.HomeServiceSpring.entity.users.Expert;
+import com.shayanr.HomeServiceSpring.exception.DuplicateException;
 import com.shayanr.HomeServiceSpring.exception.NotFoundException;
 import com.shayanr.HomeServiceSpring.exception.ValidationException;
 import com.shayanr.HomeServiceSpring.repositoy.CustomerRepository;
@@ -173,34 +174,31 @@ public class CustomerServiceImpl implements CustomerService {
                 expert.setConfirmation(Confirmation.INACTIVE);
             }
         }
-            orderService.saveOrder(customerOrder);
-            Comment comment = new Comment();
-            commentService.save(comment);
-            customerOrder.setComment(comment);
+        orderService.saveOrder(customerOrder);
 
-            return customerOrder;
+
+        return customerOrder;
 
     }
 
-        @Override
-        @Transactional
-        public CustomerOrder paidByWallet (Integer orderId, Integer workSuggestId){
-            WorkSuggestion workSuggestion = workSuggestionService.findById(workSuggestId);
-            CustomerOrder order = orderService.findById(orderId);
-            Expert expert = workSuggestion.getExpert();
+    @Override
+    @Transactional
+    public CustomerOrder paidByWallet(Integer orderId, Integer workSuggestId) {
+        WorkSuggestion workSuggestion = workSuggestionService.findById(workSuggestId);
+        CustomerOrder order = orderService.findById(orderId);
+        Expert expert = workSuggestion.getExpert();
 
-            Wallet expertWallet = expert.getWallet();
-            Customer customer = order.getCustomer();
-            Wallet customerWallet = customer.getWallet();
-            if (customerWallet.getAmount() < workSuggestion.getSuggestedPrice() + 50) {
-                throw new ValidationException("Your amount not enough to pay");
-            }
-            customerWallet.setAmount(customerWallet.getAmount() - workSuggestion.getSuggestedPrice());
-            Double expertMoney = workSuggestion.getSuggestedPrice() * 0.7;
-            expertWallet.setAmount(expertMoney);
-            walletService.save(customerWallet);
-            walletService.save(expertWallet);
-
+        Wallet expertWallet = expert.getWallet();
+        Customer customer = order.getCustomer();
+        Wallet customerWallet = customer.getWallet();
+        if (customerWallet.getAmount() < workSuggestion.getSuggestedPrice() + 50) {
+            throw new ValidationException("Your amount not enough to pay");
+        }
+        customerWallet.setAmount(customerWallet.getAmount() - workSuggestion.getSuggestedPrice());
+        Double expertMoney = workSuggestion.getSuggestedPrice() * 0.7;
+        expertWallet.setAmount(expertMoney);
+        walletService.save(customerWallet);
+        walletService.save(expertWallet);
 
 
         order.setOrderStatus(OrderStatus.PAID);
@@ -214,12 +212,21 @@ public class CustomerServiceImpl implements CustomerService {
         Customer customer = order.getCustomer();
         WorkSuggestion workSuggestion = workSuggestionService.findById(suggestionId);
         Expert expert = workSuggestion.getExpert();
-        expert.setOverallScore((double) score);
-        Comment comment = order.getComment();
+        expert.setOverallScore(expert.getOverallScore() + (double) score);
+
+        if (order.getComment() != null) {
+            throw new DuplicateException("A comment already exists for this order.");
+        }
+        Comment comment = new Comment();
         comment.setCustomer(customer);
         comment.setComment(massage);
         comment.setScore(score);
+
         commentService.save(comment);
+
+        order.setComment(comment);
+        orderService.saveOrder(order);
+
         return comment;
     }
 

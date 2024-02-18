@@ -16,7 +16,7 @@ public interface SubDutyService {
 
     SubDuty findById(Integer subDutyId);
 
-    SubDuty updateSubDutyById( Integer id, String title
+    void updateSubDutyById( Integer id, String title
             ,String description,Double basePrice);
 
     List<SubDuty> findAll();

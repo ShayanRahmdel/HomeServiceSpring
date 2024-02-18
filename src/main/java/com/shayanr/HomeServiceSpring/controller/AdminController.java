@@ -8,7 +8,7 @@ import com.shayanr.HomeServiceSpring.entity.business.SubDuty;
 import com.shayanr.HomeServiceSpring.entity.users.Customer;
 import com.shayanr.HomeServiceSpring.entity.users.Expert;
 import com.shayanr.HomeServiceSpring.mapper.CustomerMapper;
-import com.shayanr.HomeServiceSpring.mapper.ExpertMapper;
+import com.shayanr.HomeServiceSpring.mapper.ExperMapperCustom;
 import com.shayanr.HomeServiceSpring.service.AdminService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -24,6 +24,7 @@ import java.util.Set;
 public class AdminController {
 
     private final AdminService adminService;
+    private final ExperMapperCustom experMapperCustom;
 
 
     @PostMapping("/createCategory")
@@ -62,17 +63,15 @@ public class AdminController {
     }
 
     @PutMapping("/update-category/{category}")
-    public ResponseEntity<DutyCategory> updateCategory(@PathVariable Integer category, @RequestBody String newTitle) {
-        return new ResponseEntity<>(adminService.updateDutyCategory(category, newTitle), HttpStatus.OK);
+    public void updateCategory(@PathVariable Integer category, @RequestBody String newTitle) {
+        adminService.updateDutyCategory(category, newTitle);
+
     }
 
     @PutMapping("/update-subduty/{category}")
-    public ResponseEntity<Void> updateSubDuty(@PathVariable Integer category, @RequestBody SubDutyDto subDutyDto) {
-        adminService.updateSubDuty(category, subDutyDto.getTitle(),
+    public void updateSubDuty(@PathVariable Integer category, @RequestBody SubDutyDto subDutyDto) {
+        adminService.updateSubDuty(category, subDutyDto.getNewTitle(),
                 subDutyDto.getDescription(), subDutyDto.getBasePrice());
-        return new ResponseEntity<>
-                (null, HttpStatus.OK);
-
     }
 
     @DeleteMapping("/delete-subduty/{id}")
@@ -110,7 +109,7 @@ public class AdminController {
             @RequestParam(required = false) Double maxRate
     ) {
         List<Expert> experts = adminService.searchAdminByExpert(firstName, lastName, email, subDutyTitle, minRate, maxRate);
-        List<ExpertResponseDto> expertResponseDtos = ExpertMapper.INSTANCE.listModelToResponse(experts);
+        List<ExpertResponseDto> expertResponseDtos = experMapperCustom.listModelToResponse(experts);
         setExpertSubduty(experts, expertResponseDtos);
         return expertResponseDtos;
     }

@@ -10,7 +10,7 @@ public interface DutyCategoryService {
     DutyCategory save(DutyCategory category);
 
     DutyCategory findById(Integer dutyCategoryId);
-    DutyCategory updateDutyCategoriesById(String title, Integer id);
+    void updateDutyCategoriesById(String title, Integer id);
 
     void deleteById(Integer dutyCategoryId);
 

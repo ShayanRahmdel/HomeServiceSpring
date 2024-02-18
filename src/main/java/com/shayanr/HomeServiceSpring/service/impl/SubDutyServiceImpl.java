@@ -46,8 +46,8 @@ public class SubDutyServiceImpl implements SubDutyService {
     }
 
     @Override
-    public SubDuty updateSubDutyById(Integer id, String title, String description, Double basePrice) {
-        return  subDutyRepository.updateSubDutyById(id, title, description, basePrice);
+    public void updateSubDutyById(Integer id, String title, String description, Double basePrice) {
+          subDutyRepository.updateSubDutyById(id, title, description, basePrice);
     }
 
     @Override

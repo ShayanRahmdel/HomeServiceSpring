@@ -11,7 +11,7 @@ import lombok.Setter;
 @Setter
 public class SubDutyDto {
 
-    private String title;
+    private String newTitle;
 
     private String description;
 

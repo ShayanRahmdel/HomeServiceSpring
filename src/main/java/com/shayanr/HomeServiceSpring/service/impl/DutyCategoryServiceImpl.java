@@ -37,8 +37,8 @@ public class DutyCategoryServiceImpl implements DutyCategoryService {
     }
 
     @Override
-    public DutyCategory updateDutyCategoriesById(String title, Integer id) {
-        return dutyCategoryRepository.updateDutyCategoriesById(title, id);
+    public void updateDutyCategoriesById(String title, Integer id) {
+         dutyCategoryRepository.updateDutyCategoriesById(title, id);
     }
 
     @Override

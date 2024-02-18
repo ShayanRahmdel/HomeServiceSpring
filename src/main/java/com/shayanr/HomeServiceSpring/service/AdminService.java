@@ -21,10 +21,10 @@ public interface AdminService   {
     List<DutyCategory> seeAllDutyCategories();
     List<SubDuty> seeAllSubDuty();
 
-    Expert addExpertInSubDuty(Integer expertId,Integer subDutyId);
+    void addExpertInSubDuty(Integer expertId,Integer subDutyId);
 
-    Expert confirmExpert(Integer expertId);
-    Expert removeExpertFromSubDuty(Integer expertId,Integer subDutyId);
+    void confirmExpert(Integer expertId);
+    void removeExpertFromSubDuty(Integer expertId,Integer subDutyId);
 
 
     void removeDutyCategory(Integer dutyCategoryId);
@@ -35,12 +35,12 @@ public interface AdminService   {
 
     void removeExpert(Integer expertId);
 
-    SubDuty updateSubDuty(Integer subDutyId,String newTitle,String newDescription,Double newBasePrice);
+    void updateSubDuty(Integer subDutyId,String newTitle,String newDescription,Double newBasePrice);
 
     List<SubDuty> seeSubDutyByCategory(Integer category);
 
 
-    DutyCategory updateDutyCategory(Integer dutyCategoryId,String newTitle);
+    void updateDutyCategory(Integer dutyCategoryId,String newTitle);
     List<Expert> searchAdminByExpert(String name, String lastName, String email, String expertise, Double minRate, Double maxRate);
 
     List<Customer> searchAdminByCustomer(String name, String lastName, String email);

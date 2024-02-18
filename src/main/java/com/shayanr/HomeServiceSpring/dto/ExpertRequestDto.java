@@ -1,10 +1,9 @@
 package com.shayanr.HomeServiceSpring.dto;
 
-import com.shayanr.HomeServiceSpring.exception.NotFoundException;
-import com.shayanr.HomeServiceSpring.exception.ValidationException;
+
+import jakarta.validation.ValidationException;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.FutureOrPresent;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,11 +11,12 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
 
+
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Objects;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -44,8 +44,6 @@ public class ExpertRequestDto {
     private LocalTime signUpTime;
 
     private MultipartFile image;
-
-
 
 
 

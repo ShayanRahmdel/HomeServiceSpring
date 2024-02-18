@@ -88,7 +88,7 @@ public class AdminServiceImpl implements AdminService, AdminRepositoryCustom {
 
     @Override
     @Transactional
-    public Expert addExpertInSubDuty(Integer expertId, Integer subDutyId) {
+    public void addExpertInSubDuty(Integer expertId, Integer subDutyId) {
 
         Expert expert = expertService.findById(expertId);
         SubDuty subDuty = subDutyService.findById(subDutyId);
@@ -104,12 +104,12 @@ public class AdminServiceImpl implements AdminService, AdminRepositoryCustom {
 
         expertService.save(expert);
         subDutyService.save(subDuty);
-        return expert;
+
     }
 
     @Override
     @Transactional
-    public Expert confirmExpert(Integer expertId) {
+    public void confirmExpert(Integer expertId) {
 
         Expert expert = expertService.findById(expertId);
         expert.setConfirmation(Confirmation.ACCEPTED);
@@ -117,13 +117,13 @@ public class AdminServiceImpl implements AdminService, AdminRepositoryCustom {
         wallet.setAmount(0.0);
         expert.setWallet(wallet);
         expertService.save(expert);
-        return expert;
+
 
     }
 
     @Override
     @Transactional
-    public Expert removeExpertFromSubDuty(Integer expertId, Integer subDutyId) {
+    public void removeExpertFromSubDuty(Integer expertId, Integer subDutyId) {
 
         Expert expert = expertService.findById(expertId);
         SubDuty subDuty = subDutyService.findById(subDutyId);
@@ -133,8 +133,6 @@ public class AdminServiceImpl implements AdminService, AdminRepositoryCustom {
 
         expertService.save(expert);
         subDutyService.save(subDuty);
-
-        return expert;
 
     }
 
@@ -173,17 +171,23 @@ public class AdminServiceImpl implements AdminService, AdminRepositoryCustom {
 
     @Override
     @Transactional
-    public SubDuty updateSubDuty(Integer subDutyId, String newTitle, String newDescription, Double newBasePrice) {
+    public void updateSubDuty(Integer subDutyId, String newTitle, String newDescription, Double newBasePrice) {
         if (newTitle == null) {
             throw new ValidationException("newTitle cannot be null");
+        }
+        if (newDescription==null){
+            throw new ValidationException("newDescription cannot be null");
+        }
+        if (newBasePrice == null){
+            throw new ValidationException("newBasePrice cannot be null");
         }
         if (subDutyService.existsByTitle(newTitle) || newTitle.isEmpty()) {
             throw new DuplicateException("duplicate title");
         }
-        if (newDescription.isEmpty() || newBasePrice <= 0) {
+        if (newDescription.isEmpty()|| newBasePrice <= 0) {
             throw new ValidationException("check validation again");
         }
-        return subDutyService.updateSubDutyById(subDutyId, newTitle, newDescription, newBasePrice);
+         subDutyService.updateSubDutyById(subDutyId, newTitle, newDescription, newBasePrice);
     }
 
     @Override
@@ -194,7 +198,7 @@ public class AdminServiceImpl implements AdminService, AdminRepositoryCustom {
 
     @Override
     @Transactional
-    public DutyCategory updateDutyCategory(Integer dutyCategoryId, String newTitle) {
+    public void updateDutyCategory(Integer dutyCategoryId, String newTitle) {
 
         if (newTitle == null) {
             throw new ValidationException("title cannot be null");
@@ -202,7 +206,7 @@ public class AdminServiceImpl implements AdminService, AdminRepositoryCustom {
         if (newTitle.isEmpty()) {
             throw new ValidationException("check again");
         }
-        return dutyCategoryService.updateDutyCategoriesById(newTitle, dutyCategoryId);
+         dutyCategoryService.updateDutyCategoriesById(newTitle, dutyCategoryId);
     }
 
     @Override
