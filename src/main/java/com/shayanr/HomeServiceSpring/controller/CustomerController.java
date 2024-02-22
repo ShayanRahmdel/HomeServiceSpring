@@ -14,7 +14,6 @@ import com.shayanr.HomeServiceSpring.mapper.CustomerMapper;
 import com.shayanr.HomeServiceSpring.mapper.OrderMapper;
 import com.shayanr.HomeServiceSpring.mapper.SuggestionMapper;
 import com.shayanr.HomeServiceSpring.service.CustomerService;
-import com.shayanr.HomeServiceSpring.service.impl.EmailService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +29,7 @@ import java.io.ByteArrayOutputStream;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.UUID;
+
 
 
 @RestController
@@ -41,7 +40,6 @@ public class CustomerController {
 
     private final CustomerService customerService;
     private final DefaultKaptcha captchaProducer;
-    private final EmailService emailService;
     private final BCryptPasswordEncoder passwordEncoder;
 
     @PostMapping("/register")
@@ -53,7 +51,7 @@ public class CustomerController {
         return new ResponseEntity<>(customerResponseDto, HttpStatus.CREATED);
     }
 
-    @RequestMapping(value="/confirm-account", method= {RequestMethod.GET, RequestMethod.POST})
+    @GetMapping("/confirm-account")
     public ResponseEntity<?> confirmUserAccount(@RequestParam("token")String confirmationToken) {
         return customerService.confirmEmail(confirmationToken);
     }
@@ -156,19 +154,5 @@ public class CustomerController {
      return customerService.seeOrderByStatus(customerId, orderStatus);
     }
 
-
-
-//
-//    private String generateConfirmationCode() {
-//        return UUID.randomUUID().toString();
-//
-//    private void sendConfirmationEmail(String recipientEmail, String confirmationLink) {
-//        emailService.sendConfirmationEmail(recipientEmail, confirmationLink);
-//    }
-//
-//    private void setActivationToken(Customer customer, String activationToken) {
-//        // Set the activation token for the customer
-//        customer.setActivationToken(activationToken);
-//    }
 }
 
