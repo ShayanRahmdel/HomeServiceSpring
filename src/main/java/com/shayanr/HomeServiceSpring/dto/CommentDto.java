@@ -1,6 +1,6 @@
 package com.shayanr.HomeServiceSpring.dto;
 
-import jakarta.validation.ValidationException;
+
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
