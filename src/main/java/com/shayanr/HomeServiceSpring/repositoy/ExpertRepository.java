@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-public interface ExpertRepository extends JpaRepository<Expert,Integer> {
+public interface ExpertRepository extends JpaRepository<Expert,Integer>,ExpertRepositoryCustom {
     @Query("SELECT s.dutyCategory.id FROM Expert e JOIN e.subDuties s WHERE e.id = :id")
     Integer expertCategory(@Param("id") Integer id);
 }
