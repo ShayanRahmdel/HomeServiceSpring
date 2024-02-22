@@ -4,16 +4,24 @@ package com.shayanr.HomeServiceSpring.service.impl;
 import com.shayanr.HomeServiceSpring.entity.business.*;
 import com.shayanr.HomeServiceSpring.entity.enumration.Confirmation;
 import com.shayanr.HomeServiceSpring.entity.enumration.OrderStatus;
+import com.shayanr.HomeServiceSpring.entity.enumration.Role;
+import com.shayanr.HomeServiceSpring.entity.users.ConfirmationToken;
 import com.shayanr.HomeServiceSpring.entity.users.Customer;
 import com.shayanr.HomeServiceSpring.entity.users.Expert;
+import com.shayanr.HomeServiceSpring.entity.users.User;
 import com.shayanr.HomeServiceSpring.exception.DuplicateException;
 import com.shayanr.HomeServiceSpring.exception.NotFoundException;
 import com.shayanr.HomeServiceSpring.exception.ValidationException;
+import com.shayanr.HomeServiceSpring.repositoy.ConfirmationTokenRepository;
 import com.shayanr.HomeServiceSpring.repositoy.CustomerRepository;
+import com.shayanr.HomeServiceSpring.repositoy.CustomerRepositoryCustom;
+import com.shayanr.HomeServiceSpring.repositoy.UserRepository;
 import com.shayanr.HomeServiceSpring.service.*;
 import com.shayanr.HomeServiceSpring.util.Validate;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -23,15 +31,15 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class CustomerServiceImpl implements CustomerService {
+public class CustomerServiceImpl implements CustomerService, CustomerRepositoryCustom {
 
     private final CustomerRepository customerRepository;
-
     private final WorkSuggestionService workSuggestionService;
-
     private final CommentService commentService;
-
-
+    private final UserRepository userRepository;
+    private final UserService userService;
+    private final ConfirmationTokenRepository confirmationTokenRepository;
+    private final EmailService emailService;
     private final WalletService walletService;
     private final SubDutyService subDutyService;
     private final OrderService orderService;
@@ -58,12 +66,28 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     @Transactional
-    public Customer signUp(Customer customer) {
+    public ResponseEntity<?> signUp(Customer customer) {
+        if (customer == null) {
+            throw new NotFoundException("null customer");
+        }
+        if (userRepository.findByEmail(customer.getEmail()).isPresent()) {
+            return ResponseEntity.badRequest().body("Error: Email is already in use!");
+
+        }
+
+        customer.setRole(Role.ROLE_CUSTOMER);
         customerRepository.save(customer);
         Wallet wallet = new Wallet();
         wallet.setAmount(0.0);
         customer.setWallet(wallet);
-        return customer;
+        sendEmail(customer.getEmail());
+
+
+
+        return ResponseEntity.ok("Verify email by the link sent on your email address");
+
+
+
 
     }
 
@@ -105,6 +129,10 @@ public class CustomerServiceImpl implements CustomerService {
         Customer customer = findById(customerId);
         CustomerOrder customerOrder = orderService.findById(orderId);
 
+        if (customerOrder.getAddress()!=null){
+            throw new DuplicateException("this order have Address");
+        }
+
         if (!Validate.cityValidation(address.getCity()) || !Validate.postalValidation(address.getPostalCode())
                 || !Validate.isValidCity(address.getState())) {
             throw new ValidationException("not a valid address");
@@ -112,7 +140,7 @@ public class CustomerServiceImpl implements CustomerService {
         address.setCustomer(customer);
         addressService.saveAddress(address);
 
-        assert customerOrder != null;
+
         customerOrder.setAddress(address);
         orderService.saveOrder(customerOrder);
         return address;
@@ -230,6 +258,12 @@ public class CustomerServiceImpl implements CustomerService {
         return comment;
     }
 
+    @Override
+    public Double seeAmountWallet(Integer customerId) {
+        Customer customer = findById(customerId);
+        return customer.getWallet().getAmount();
+    }
+
 
     @Override
     @Transactional
@@ -253,6 +287,43 @@ public class CustomerServiceImpl implements CustomerService {
 
     Boolean validScoreForExpert(Expert expert) {
         return expert.getOverallScore() <= 0;
+    }
+
+    @Override
+    public List<CustomerOrder> seeOrderByStatus(Integer customerId, String orderStatus) {
+        return customerRepository.seeOrderByStatus(customerId,orderStatus);
+    }
+
+    @Override
+    public void sendEmail(String emailAddress) {
+        User customer = userService.findByEmail(emailAddress).orElse(null);
+
+        ConfirmationToken confirmationToken = new ConfirmationToken(customer);
+
+        confirmationTokenRepository.save(confirmationToken);
+
+        SimpleMailMessage mailMessage = new SimpleMailMessage();
+        mailMessage.setFrom("shayan.rahmdel@gmail.com");
+        mailMessage.setTo(emailAddress);
+        mailMessage.setSubject("Complete Registration!");
+        mailMessage.setText("To confirm your account, please click here : " + "http://localhost:8080/confirm-account?token= " + confirmationToken.getConfirmationToken());
+        emailService.sendEmail(mailMessage);
+
+    }
+
+    @Override
+    public ResponseEntity<?> confirmEmail(String confirmationToken) {
+        ConfirmationToken token = confirmationTokenRepository.findByConfirmationToken(confirmationToken);
+
+        if(token != null)
+        {
+            Customer customer = (Customer) userRepository.findByEmail(token.getUser().getEmail()).orElse(null);
+            assert customer != null;
+            customer.setEnabled(true);
+            userRepository.save(customer);
+            return ResponseEntity.ok("Email verified successfully!");
+        }
+        return ResponseEntity.badRequest().body("Error: Couldn't verify email");
     }
 }
 
