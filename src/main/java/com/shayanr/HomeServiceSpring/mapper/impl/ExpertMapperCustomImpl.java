@@ -4,9 +4,7 @@ import com.shayanr.HomeServiceSpring.dto.ExpertRequestDto;
 import com.shayanr.HomeServiceSpring.dto.ExpertResponseCustomDto;
 import com.shayanr.HomeServiceSpring.dto.ExpertResponseDto;
 import com.shayanr.HomeServiceSpring.entity.users.Expert;
-import com.shayanr.HomeServiceSpring.mapper.ExperMapperCustom;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import com.shayanr.HomeServiceSpring.mapper.ExpertMapperCustom;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -14,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class ExpertMapperCustomImpl implements ExperMapperCustom {
+public class ExpertMapperCustomImpl implements ExpertMapperCustom {
 
     @Override
     public Expert requestDtoToModel(ExpertRequestDto requestDto) throws IOException {
@@ -56,7 +54,7 @@ public class ExpertMapperCustomImpl implements ExperMapperCustom {
             return null;
         }
 
-        List<ExpertResponseDto> list = new ArrayList<ExpertResponseDto>( experts.size() );
+        List<ExpertResponseDto> list = new ArrayList<>( experts.size() );
         for ( Expert expert : experts ) {
             list.add( modelToResponse( expert ) );
         }
