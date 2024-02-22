@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.shayanr.HomeServiceSpring.entity.enumration.OrderStatus;
 import com.shayanr.HomeServiceSpring.entity.users.Customer;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.FutureOrPresent;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,7 +21,7 @@ import java.util.List;
 @NoArgsConstructor
 @Setter
 @Getter
-@Table(name = "order_table")
+@Table(name = "orders")
 public class CustomerOrder {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -59,14 +59,6 @@ public class CustomerOrder {
     @OneToOne
     private Address address;
 
-
-    public CustomerOrder(Double proposedPrice, String jobDescription, LocalDate workDate, LocalTime timeDate) {
-        this.proposedPrice = proposedPrice;
-        this.jobDescription = jobDescription;
-        this.workDate = workDate;
-        this.timeDate = timeDate;
-
-    }
 
     @Override
     public String toString() {
