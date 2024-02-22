@@ -9,7 +9,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
-public interface CustomerRepository extends JpaRepository<Customer,Integer> {
+public interface CustomerRepository extends JpaRepository<Customer,Integer>,CustomerRepositoryCustom {
     @Query("SELECT w FROM WorkSuggestion w JOIN w.customerOrder o WHERE o.customer.id = :customerId order by w.suggestedPrice ASC ")
     List<WorkSuggestion> seeSuggestionsByPrice(@Param("customerId")Integer customerId);
 
