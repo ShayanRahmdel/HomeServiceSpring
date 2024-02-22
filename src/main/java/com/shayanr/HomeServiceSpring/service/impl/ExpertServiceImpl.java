@@ -6,24 +6,31 @@ import com.shayanr.HomeServiceSpring.entity.business.CustomerOrder;
 import com.shayanr.HomeServiceSpring.entity.business.WorkSuggestion;
 import com.shayanr.HomeServiceSpring.entity.enumration.Confirmation;
 import com.shayanr.HomeServiceSpring.entity.enumration.OrderStatus;
+import com.shayanr.HomeServiceSpring.entity.enumration.Role;
+import com.shayanr.HomeServiceSpring.entity.users.ConfirmationToken;
 import com.shayanr.HomeServiceSpring.entity.users.Expert;
+import com.shayanr.HomeServiceSpring.entity.users.User;
 import com.shayanr.HomeServiceSpring.exception.IsEmptyFieldException;
 import com.shayanr.HomeServiceSpring.exception.NotFoundException;
 import com.shayanr.HomeServiceSpring.exception.ValidationException;
+import com.shayanr.HomeServiceSpring.repositoy.ConfirmationTokenRepository;
 import com.shayanr.HomeServiceSpring.repositoy.ExpertRepository;
+import com.shayanr.HomeServiceSpring.repositoy.UserRepository;
 import com.shayanr.HomeServiceSpring.service.ExpertService;
 import com.shayanr.HomeServiceSpring.service.OrderService;
+import com.shayanr.HomeServiceSpring.service.UserService;
 import com.shayanr.HomeServiceSpring.service.WorkSuggestionService;
 import com.shayanr.HomeServiceSpring.util.Validate;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
+
 
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
-import java.util.Objects;
 
 
 @Service
@@ -31,11 +38,12 @@ import java.util.Objects;
 public class ExpertServiceImpl implements ExpertService {
 
     private final ExpertRepository expertRepository;
-
     private final OrderService orderService;
-
     private final WorkSuggestionService workSuggestionService;
-
+    private final UserService userService;
+    private final EmailService emailService;
+    private final ConfirmationTokenRepository confirmationTokenRepository;
+    private final UserRepository userRepository;
 
 
     @Override
@@ -47,7 +55,7 @@ public class ExpertServiceImpl implements ExpertService {
 
     @Override
     public Expert findById(Integer expertId) {
-      return expertRepository.findById(expertId).orElseThrow(()-> new NotFoundException("Expert not found"));
+        return expertRepository.findById(expertId).orElseThrow(() -> new NotFoundException("Expert not found"));
     }
 
     @Override
@@ -63,14 +71,19 @@ public class ExpertServiceImpl implements ExpertService {
 
     @Override
     @Transactional
-    public Expert signUp(Expert expert) {
+    public ResponseEntity<?> signUp(Expert expert) {
         if (expert == null) {
             throw new NotFoundException("null expert");
         }
+        if (userRepository.findByEmail(expert.getEmail()).isPresent()) {
+            return ResponseEntity.badRequest().body("Error: Email is already in use!");
 
-        expert.setConfirmation(Confirmation.NEW);
+        }
+        expert.setConfirmation(Confirmation.WAITNIG_FOR_ACCEPT);
+        expert.setRole(Role.ROLE_EXPERT);
         expertRepository.save(expert);
-        return expert;
+        sendEmail(expert.getEmail());
+        return ResponseEntity.ok("Verify email by the link sent on your email address");
 
     }
 
@@ -100,7 +113,7 @@ public class ExpertServiceImpl implements ExpertService {
 
 
     @Override
-    public void saveImage(String imagePath, Integer expertId){
+    public void saveImage(String imagePath, Integer expertId) {
         Expert expert = findById(expertId);
         if (imagePath.isEmpty()) {
             throw new IsEmptyFieldException("Path must not be empty");
@@ -146,6 +159,48 @@ public class ExpertServiceImpl implements ExpertService {
     @Override
     public Integer expertCategory(Integer id) {
         return expertRepository.expertCategory(id);
+    }
+
+    @Override
+    public Double seeAmountWallet(Integer expertId) {
+        Expert expert = findById(expertId);
+        return expert.getWallet().getAmount();
+    }
+
+    @Override
+    public List<CustomerOrder> seeOrdersByStatus(Integer expertId) {
+        return expertRepository.seeOrdersByStatus(expertId);
+    }
+
+    @Override
+    public void sendEmail(String emailAddress) {
+        User customer = userService.findByEmail(emailAddress).orElse(null);
+
+        ConfirmationToken confirmationToken = new ConfirmationToken(customer);
+
+        confirmationTokenRepository.save(confirmationToken);
+
+        SimpleMailMessage mailMessage = new SimpleMailMessage();
+        mailMessage.setFrom("shayan.rahmdel@gmail.com");
+        mailMessage.setTo(emailAddress);
+        mailMessage.setSubject("Complete Registration!");
+        mailMessage.setText("To confirm your account, please click here : " + "http://localhost:8080/confirm-account?token= " + confirmationToken.getConfirmationToken());
+        emailService.sendEmail(mailMessage);
+
+    }
+
+    @Override
+    public ResponseEntity<?> confirmEmail(String confirmationToken) {
+        ConfirmationToken token = confirmationTokenRepository.findByConfirmationToken(confirmationToken);
+
+        if (token != null) {
+            Expert expert = (Expert) userService.findByEmail(token.getUser().getEmail()).orElse(null);
+            assert expert != null;
+            expert.setEnabled(true);
+            userRepository.save(expert);
+            return ResponseEntity.ok("Email verified successfully!");
+        }
+        return ResponseEntity.badRequest().body("Error: Couldn't verify email");
     }
 
     @Override
