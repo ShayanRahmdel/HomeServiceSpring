@@ -4,14 +4,12 @@ import com.shayanr.HomeServiceSpring.dto.ExpertRequestDto;
 import com.shayanr.HomeServiceSpring.dto.ExpertResponseCustomDto;
 import com.shayanr.HomeServiceSpring.dto.ExpertResponseDto;
 import com.shayanr.HomeServiceSpring.entity.users.Expert;
-import org.mapstruct.factory.Mappers;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+
 
 import java.io.IOException;
 import java.util.List;
 
-public interface ExperMapperCustom {
+public interface ExpertMapperCustom {
 
 
 
