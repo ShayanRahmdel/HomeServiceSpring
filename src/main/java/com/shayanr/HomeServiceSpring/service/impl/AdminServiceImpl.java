@@ -1,12 +1,12 @@
 package com.shayanr.HomeServiceSpring.service.impl;
 
 
-import com.shayanr.HomeServiceSpring.entity.business.DutyCategory;
-import com.shayanr.HomeServiceSpring.entity.business.SubDuty;
-import com.shayanr.HomeServiceSpring.entity.business.Wallet;
+import com.shayanr.HomeServiceSpring.entity.business.*;
 import com.shayanr.HomeServiceSpring.entity.enumration.Confirmation;
+import com.shayanr.HomeServiceSpring.entity.enumration.OrderStatus;
 import com.shayanr.HomeServiceSpring.entity.users.Customer;
 import com.shayanr.HomeServiceSpring.entity.users.Expert;
+import com.shayanr.HomeServiceSpring.entity.users.User;
 import com.shayanr.HomeServiceSpring.exception.DuplicateException;
 import com.shayanr.HomeServiceSpring.exception.IsEmptyFieldException;
 import com.shayanr.HomeServiceSpring.exception.ValidationException;
@@ -17,6 +17,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.*;
 
 @Service
@@ -92,7 +93,7 @@ public class AdminServiceImpl implements AdminService, AdminRepositoryCustom {
 
         Expert expert = expertService.findById(expertId);
         SubDuty subDuty = subDutyService.findById(subDutyId);
-        if (expertService.expertCategory(expertId) != null && !Objects.equals(expertService.expertCategory(expertId), subDutyId)) {
+        if (expertService.expertCategory(expertId) != null && !Objects.equals(expertService.expertCategory(expertId), subDuty.getDutyCategory().getId())) {
             throw new ValidationException("Expert category is diifferent ");
         }
 
@@ -210,12 +211,17 @@ public class AdminServiceImpl implements AdminService, AdminRepositoryCustom {
     }
 
     @Override
-    public List<Expert> searchAdminByExpert(String name, String lastName, String email, String expertise, Double minRate, Double maxRate) {
-        return adminRepository.searchAdminByExpert(name, lastName, email, expertise, minRate, maxRate);
+    public List<User> searchAdminByUser(String name, String lastName, String email, String expertise, Double minRate, Double maxRate) {
+        return adminRepository.searchAdminByUser(name, lastName, email, expertise, minRate, maxRate);
     }
 
     @Override
-    public List<Customer> searchAdminByCustomer(String name, String lastName, String email) {
-        return adminRepository.searchAdminByCustomer(name, lastName, email);
+    public List<WorkSuggestion> searchWorkSuggestionByName(String firstName, String lastName) {
+        return adminRepository.searchWorkSuggestionByName(firstName, lastName);
+    }
+
+    @Override
+    public List<CustomerOrder> searchOrders(LocalDate startDate, LocalDate endDate, OrderStatus orderStatus, String category, String subDuty) {
+        return adminRepository.searchOrders(startDate, endDate, orderStatus, category, subDuty);
     }
 }
