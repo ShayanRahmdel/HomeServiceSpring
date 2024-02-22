@@ -1,14 +1,20 @@
 package com.shayanr.HomeServiceSpring.entity.users;
 
 
+import com.shayanr.HomeServiceSpring.entity.enumration.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Collection;
+import java.util.List;
 
 
 @Entity
@@ -17,8 +23,8 @@ import java.time.LocalTime;
 @Table(name = "users")
 @AllArgsConstructor
 @NoArgsConstructor
-@Inheritance(strategy = InheritanceType.JOINED)
-public class User {
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -33,7 +39,6 @@ public class User {
     @Column(unique = true, nullable = false)
     private String email;
 
-    @Column(length = 8, nullable = false)
     private String password;
 
     @Column(nullable = false)
@@ -42,5 +47,37 @@ public class User {
     @Column(nullable = false)
     private LocalTime signUpTime;
 
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority(role.name()));
+    }
+
+    @Override
+    public String getUsername() {
+        return getEmail();
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
 }
