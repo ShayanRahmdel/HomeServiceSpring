@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="https://www.thymeleaf.org" lang="en">
+<html  lang="en">
 
 <head>
     <meta charset="UTF-8">
@@ -18,16 +18,6 @@
         .card {
             padding: 20px;
         }
-
-        /*.sepah-image {*/
-        /*  text-align: center;*/
-        /*  margin-bottom: 50px;*/
-        /*}*/
-
-        /*.card-image img {*/
-        /*  width: 300px;*/
-        /*  height: 300px;*/
-        /*}*/
 
 
         .captcha {
@@ -53,9 +43,6 @@
                 <div class="col-md-9 col-lg-7 col-xl-5" STYLE="background-color: #c0dfef">
                     <div class="card" STYLE="background-color: #e5e7fc">
                         <div class="card-body">
-                            <!--              <div class="sepah-image">-->
-                            <!--                <img src="C:\Users\Shayan\Desktop\payment\sepah.jpg"  th:id="sepah-image">-->
-                            <!--              </div>-->
                             <div class="card-title d-flex justify-content-between mb-0">
                                 <p class="mb-0">$760</p>
                             </div>
@@ -142,6 +129,11 @@
 
         const captchaNumberElement = document.getElementById('captcha-number');
         const captchaNumber = captchaNumberElement.textContent;
+        if (year <24){
+            alert("your card is expired");
+            return;
+        }
+
 
         if (captchaInput !== captchaNumber) {
             alert("Invalid captcha. Please try again.");
