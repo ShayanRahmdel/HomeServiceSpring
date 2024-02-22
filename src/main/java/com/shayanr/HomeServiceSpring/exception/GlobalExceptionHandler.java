@@ -18,12 +18,19 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);  //409
 //        return ex.getMessage(); //200
     }
+
     @ExceptionHandler(IsEmptyFieldException.class)
     public ResponseEntity<String> emptyFieldHandler(IsEmptyFieldException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);
     }
+
     @ExceptionHandler(ValidationException.class)
     public ResponseEntity<String> validationExceptionHandler(ValidationException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(NotFoundEmail.class)
+    public ResponseEntity<String> notFoundEmail(ValidationException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);
     }
 }
