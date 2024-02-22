@@ -14,11 +14,13 @@ import com.shayanr.HomeServiceSpring.mapper.CustomerMapper;
 import com.shayanr.HomeServiceSpring.mapper.OrderMapper;
 import com.shayanr.HomeServiceSpring.mapper.SuggestionMapper;
 import com.shayanr.HomeServiceSpring.service.CustomerService;
+import com.shayanr.HomeServiceSpring.service.impl.EmailService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,6 +30,7 @@ import java.io.ByteArrayOutputStream;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.UUID;
 
 
 @RestController
@@ -38,13 +41,21 @@ public class CustomerController {
 
     private final CustomerService customerService;
     private final DefaultKaptcha captchaProducer;
+    private final EmailService emailService;
+    private final BCryptPasswordEncoder passwordEncoder;
 
     @PostMapping("/register")
     public ResponseEntity<CustomerResponseDto> registerCustomer(@Valid @RequestBody CustomerRequestDto customerRequestDto) {
         Customer customer = CustomerMapper.INSTANCE.requestDtoToModel(customerRequestDto);
+        customer.setPassword(passwordEncoder.encode(customerRequestDto.getPassword()));
         customerService.signUp(customer);
         CustomerResponseDto customerResponseDto = CustomerMapper.INSTANCE.modelToResponse(customer);
         return new ResponseEntity<>(customerResponseDto, HttpStatus.CREATED);
+    }
+
+    @RequestMapping(value="/confirm-account", method= {RequestMethod.GET, RequestMethod.POST})
+    public ResponseEntity<?> confirmUserAccount(@RequestParam("token")String confirmationToken) {
+        return customerService.confirmEmail(confirmationToken);
     }
 
     @PutMapping("/change-password/{customerId}")
@@ -134,5 +145,30 @@ public class CustomerController {
         response.getOutputStream().flush();
         response.getOutputStream().close();
     }
+
+    @GetMapping("/see-amount-wallet/{customerId}")
+    public Double seeAmountWallet(@PathVariable Integer customerId){
+        return customerService.seeAmountWallet(customerId);
+    }
+
+    @GetMapping("/see-orders-by-status/{customerId}")
+    public List<CustomerOrder> seeOrdersByStatus(@PathVariable Integer customerId, @RequestBody String orderStatus){
+     return customerService.seeOrderByStatus(customerId, orderStatus);
+    }
+
+
+
+//
+//    private String generateConfirmationCode() {
+//        return UUID.randomUUID().toString();
+//
+//    private void sendConfirmationEmail(String recipientEmail, String confirmationLink) {
+//        emailService.sendConfirmationEmail(recipientEmail, confirmationLink);
+//    }
+//
+//    private void setActivationToken(Customer customer, String activationToken) {
+//        // Set the activation token for the customer
+//        customer.setActivationToken(activationToken);
+//    }
 }
 
