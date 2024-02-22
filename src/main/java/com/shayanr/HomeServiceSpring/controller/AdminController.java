@@ -1,22 +1,29 @@
 package com.shayanr.HomeServiceSpring.controller;
 
 import com.shayanr.HomeServiceSpring.dto.CustomerResponseDto;
-import com.shayanr.HomeServiceSpring.dto.ExpertResponseDto;
+import com.shayanr.HomeServiceSpring.dto.OrderResponseDto;
 import com.shayanr.HomeServiceSpring.dto.SubDutyDto;
+import com.shayanr.HomeServiceSpring.dto.UserDto;
+import com.shayanr.HomeServiceSpring.entity.business.CustomerOrder;
 import com.shayanr.HomeServiceSpring.entity.business.DutyCategory;
 import com.shayanr.HomeServiceSpring.entity.business.SubDuty;
+import com.shayanr.HomeServiceSpring.entity.business.WorkSuggestion;
+import com.shayanr.HomeServiceSpring.entity.enumration.OrderStatus;
 import com.shayanr.HomeServiceSpring.entity.users.Customer;
 import com.shayanr.HomeServiceSpring.entity.users.Expert;
+import com.shayanr.HomeServiceSpring.entity.users.User;
 import com.shayanr.HomeServiceSpring.mapper.CustomerMapper;
-import com.shayanr.HomeServiceSpring.mapper.ExperMapperCustom;
+import com.shayanr.HomeServiceSpring.mapper.OrderMapper;
+import com.shayanr.HomeServiceSpring.mapper.UserMapper;
 import com.shayanr.HomeServiceSpring.service.AdminService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
-import java.util.Set;
+
 
 @RestController
 @RequestMapping("/admin")
@@ -24,7 +31,7 @@ import java.util.Set;
 public class AdminController {
 
     private final AdminService adminService;
-    private final ExperMapperCustom experMapperCustom;
+    private final UserMapper userMapper;
 
 
     @PostMapping("/createCategory")
@@ -99,8 +106,8 @@ public class AdminController {
         adminService.removeExpertFromSubDuty(expertId, subdutyId);
     }
 
-    @GetMapping("/search-expert")
-    public List<ExpertResponseDto> searchAdminByExpert(
+    @GetMapping("/search-user")
+    public List<UserDto> searchAdminByUser(
             @RequestParam(required = false) String firstName,
             @RequestParam(required = false) String lastName,
             @RequestParam(required = false) String email,
@@ -108,32 +115,25 @@ public class AdminController {
             @RequestParam(required = false) Double minRate,
             @RequestParam(required = false) Double maxRate
     ) {
-        List<Expert> experts = adminService.searchAdminByExpert(firstName, lastName, email, subDutyTitle, minRate, maxRate);
-        List<ExpertResponseDto> expertResponseDtos = experMapperCustom.listModelToResponse(experts);
-        setExpertSubduty(experts, expertResponseDtos);
-        return expertResponseDtos;
-    }
-
-    @GetMapping("/search-customer")
-    public List<CustomerResponseDto> searchAdminByCustomer(@RequestParam(required = false) String firstName,
-                                                           @RequestParam(required = false) String lastName,
-                                                           @RequestParam(required = false) String email) {
-        List<Customer> customers = adminService.searchAdminByCustomer(firstName, lastName, email);
-        return CustomerMapper.INSTANCE.listModelToResponse(customers);
+        List<User> users = adminService.searchAdminByUser(firstName, lastName, email, subDutyTitle, minRate, maxRate);
+        return userMapper.userToExpertResponse(users);
 
     }
+    @GetMapping("/search-orders")
+    public List<OrderResponseDto> searchOrders(
+            @RequestParam(required = false) LocalDate startDate,
+            @RequestParam(required = false) LocalDate endDate,
+            @RequestParam(required = false) OrderStatus orderStatus,
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) String subDuty){
 
-    private void setExpertSubduty(List<Expert> experts, List<ExpertResponseDto> expertResponseDtos) {
-        for (ExpertResponseDto expert : expertResponseDtos) {
-            for (Expert modelExpert : experts) {
-                Set<SubDuty> subDuties = modelExpert.getSubDuties();
-                for (SubDuty subDuty : subDuties) {
-                    if (subDuty.getTitle() != null) {
-                        expert.setSubDutyTitle(subDuty.getTitle());
-                    }
-                }
+        return OrderMapper.INSTANCE.listModelToResponse(adminService.searchOrders(startDate, endDate,orderStatus,category,subDuty));
 
-            }
-        }
     }
+
+    @GetMapping("/search-suggests-by-name")
+    public List<WorkSuggestion> searchSuggestionsByName(@RequestParam String firstName,@RequestParam String lastName){
+        return adminService.searchWorkSuggestionByName(firstName,lastName);
+    }
+
 }
