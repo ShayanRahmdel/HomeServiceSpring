@@ -1,7 +1,7 @@
 package com.shayanr.HomeServiceSpring.dto;
 
 
-import jakarta.validation.ValidationException;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.Pattern;
@@ -12,10 +12,10 @@ import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
 
 
-import java.io.IOException;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Objects;
+
 
 @AllArgsConstructor
 @NoArgsConstructor
