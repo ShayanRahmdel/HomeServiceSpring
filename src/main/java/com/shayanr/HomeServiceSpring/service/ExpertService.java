@@ -6,9 +6,7 @@ package com.shayanr.HomeServiceSpring.service;
 import com.shayanr.HomeServiceSpring.entity.business.CustomerOrder;
 import com.shayanr.HomeServiceSpring.entity.business.WorkSuggestion;
 import com.shayanr.HomeServiceSpring.entity.users.Expert;
-
-
-
+import org.springframework.http.ResponseEntity;
 
 
 import java.io.IOException;
@@ -25,7 +23,7 @@ public interface ExpertService {
 
     List<Expert> findAll();
 
-    Expert signUp(Expert expert);
+    ResponseEntity<?> signUp(Expert expert);
 
     Expert changePassword(Integer expertId,String newPassword,String confirmPassword);
 
@@ -38,6 +36,14 @@ public interface ExpertService {
     Integer seeScoreOrder(Integer orderId);
 
     Integer expertCategory(Integer id);
+
+    Double seeAmountWallet(Integer expertId);
+
+    List<CustomerOrder> seeOrdersByStatus(Integer expertId);
+
+    void sendEmail(String emailAddress);
+
+    ResponseEntity<?> confirmEmail(String confirmationToken);
 
     void deleteAll();
 
