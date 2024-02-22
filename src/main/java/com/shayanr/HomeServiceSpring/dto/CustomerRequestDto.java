@@ -1,9 +1,8 @@
 package com.shayanr.HomeServiceSpring.dto;
 
-import jakarta.persistence.Column;
-import jakarta.validation.ValidationException;
+
+
 import jakarta.validation.constraints.*;
-import jdk.jfr.Name;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -38,12 +37,4 @@ public class CustomerRequestDto {
 
     private LocalTime signUpTime;
 
-
-    public void setFirstName(String firstName){
-        if(!firstName.matches("^[A-Z](?=.{1,29}$)[A-Za-z]*(?:\\h+[A-Z][A-Za-z]*)*$")){
-            throw new ValidationException("name not valid");
-        }
-            this.firstName=firstName;
-
-    }
 }
