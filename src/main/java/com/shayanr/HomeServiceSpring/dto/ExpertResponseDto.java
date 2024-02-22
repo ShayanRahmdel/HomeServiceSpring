@@ -1,6 +1,6 @@
 package com.shayanr.HomeServiceSpring.dto;
 
-import com.shayanr.HomeServiceSpring.entity.business.SubDuty;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
