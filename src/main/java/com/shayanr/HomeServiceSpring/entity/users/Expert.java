@@ -6,14 +6,16 @@ import com.shayanr.HomeServiceSpring.entity.business.SubDuty;
 import com.shayanr.HomeServiceSpring.entity.business.Wallet;
 import com.shayanr.HomeServiceSpring.entity.business.WorkSuggestion;
 import com.shayanr.HomeServiceSpring.entity.enumration.Confirmation;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.security.core.userdetails.UserDetails;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
+
+
 import java.util.List;
 import java.util.Set;
 
@@ -23,7 +25,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Setter
 @Getter
-public class Expert extends User {
+public class Expert extends User implements UserDetails {
 
     @Enumerated(EnumType.STRING)
     private Confirmation confirmation;
@@ -31,6 +33,9 @@ public class Expert extends User {
     private byte[] image;
 
     private Double overallScore=0.0;
+
+    private boolean isEnabled;
+
 
 
     @ManyToMany(mappedBy = "experts")
@@ -41,25 +46,6 @@ public class Expert extends User {
 
     @OneToOne(cascade = CascadeType.ALL)
     private Wallet wallet;
-
-    public Expert(Integer id) {
-        setId(id);
-    }
-
-    public void setImage(byte[] image) {
-        if (image.length > 300 * 1024) {
-            throw new IllegalArgumentException("Image size exceeds the limit of 300KB.");
-        }
-        this.image = image;
-    }public Expert(String firstName, String lastName, String email, String password, LocalDate signUpDate, LocalTime signUpTime) {
-        setFirstName(firstName);
-        setLastName(lastName);
-        setEmail(email);
-        setPassword(password);
-        setSignUpDate(signUpDate);
-        setSignUpTime(signUpTime);
-    }
-
     @Override
     public String toString() {
         return  "Epert id " + getId()+"\n"+
