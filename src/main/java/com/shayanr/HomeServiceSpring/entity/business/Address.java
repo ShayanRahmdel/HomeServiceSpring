@@ -41,12 +41,7 @@ public class Address {
     @JsonIgnore
     private CustomerOrder customerOrder;
 
-    public Address(String state, String city, String address, String postalCode) {
-        this.state = state;
-        this.city = city;
-        this.address = address;
-        this.postalCode = postalCode;
-    }
+
 
     @Override
     public String toString() {
