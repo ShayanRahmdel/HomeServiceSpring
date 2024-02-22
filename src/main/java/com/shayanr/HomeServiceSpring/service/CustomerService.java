@@ -6,6 +6,8 @@ import com.shayanr.HomeServiceSpring.entity.business.Comment;
 import com.shayanr.HomeServiceSpring.entity.business.CustomerOrder;
 import com.shayanr.HomeServiceSpring.entity.business.WorkSuggestion;
 import com.shayanr.HomeServiceSpring.entity.users.Customer;
+import org.springframework.http.ResponseEntity;
+
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -20,7 +22,7 @@ public interface CustomerService {
 
     List<Customer> findAll();
 
-    Customer signUp(Customer customer);
+    ResponseEntity<?> signUp(Customer customer);
 
     Customer changePassword(Integer customerId,String newPassword,String confirmPassword);
 
@@ -41,6 +43,14 @@ public interface CustomerService {
     CustomerOrder paidByWallet(Integer orderId, Integer workSuggestId);
 
     Comment createComment(Integer orderId,Integer score,String massage,Integer suggestionId);
+
+    Double seeAmountWallet(Integer customerId);
+
+    List<CustomerOrder> seeOrderByStatus(Integer customerId, String orderStatus);
+
+    void sendEmail(String emailAddress);
+
+    ResponseEntity<?> confirmEmail(String confirmationToken);
 
     void deleteAll();
 
