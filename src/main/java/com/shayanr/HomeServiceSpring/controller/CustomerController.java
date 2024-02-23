@@ -51,7 +51,7 @@ public class CustomerController {
         return new ResponseEntity<>(customerResponseDto, HttpStatus.CREATED);
     }
 
-    @GetMapping("/confirm-account")
+    @PostMapping("/confirm-account")
     public ResponseEntity<?> confirmUserAccount(@RequestParam("token")String confirmationToken) {
         return customerService.confirmEmail(confirmationToken);
     }

@@ -40,7 +40,7 @@ public class ExpertController {
         return new ResponseEntity<>(expertMapperCustom.modelToResponseCustom(expert),HttpStatus.CREATED);
     }
 
-    @GetMapping("/confirm-account")
+    @PostMapping("/confirm-account")
     public ResponseEntity<?> confirmUserAccount(@RequestParam("token")String confirmationToken) {
         return expertService.confirmEmail(confirmationToken);
     }
