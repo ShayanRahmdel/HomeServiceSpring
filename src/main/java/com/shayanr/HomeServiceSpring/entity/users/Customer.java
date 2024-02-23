@@ -5,7 +5,6 @@ import com.shayanr.HomeServiceSpring.entity.business.Address;
 import com.shayanr.HomeServiceSpring.entity.business.Comment;
 import com.shayanr.HomeServiceSpring.entity.business.CustomerOrder;
 import com.shayanr.HomeServiceSpring.entity.business.Wallet;
-import com.shayanr.HomeServiceSpring.entity.enumration.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
