@@ -5,6 +5,7 @@ import com.shayanr.HomeServiceSpring.entity.business.DutyCategory;
 import com.shayanr.HomeServiceSpring.entity.business.SubDuty;
 import com.shayanr.HomeServiceSpring.entity.business.WorkSuggestion;
 import com.shayanr.HomeServiceSpring.entity.enumration.OrderStatus;
+import com.shayanr.HomeServiceSpring.entity.users.Customer;
 import com.shayanr.HomeServiceSpring.entity.users.Expert;
 import com.shayanr.HomeServiceSpring.entity.users.User;
 import com.shayanr.HomeServiceSpring.repositoy.AdminRepositoryCustom;
@@ -14,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,7 +27,8 @@ public class AdminRepositoryImpl implements AdminRepositoryCustom {
 
     @Override
     public List<User> searchAdminByUser(String firstName, String lastName, String email,
-                                        String expertise, Double minRate, Double maxRate) {
+                                        String expertise, Double minRate, Double maxRate, LocalTime registrationTime,
+                                        LocalTime registrationTimeTo) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<User> cq = cb.createQuery(User.class);
         Root<User> user = cq.from(User.class);
@@ -55,6 +58,15 @@ public class AdminRepositoryImpl implements AdminRepositoryCustom {
         } else if (maxRate != null) {
             predicates.add(cb.lessThanOrEqualTo(user.get("overallScore"), maxRate));
         }
+
+        if (registrationTime != null && registrationTimeTo != null) {
+            predicates.add(cb.between(user.get("signUpTime"), registrationTime, registrationTimeTo));
+        } else if (registrationTime != null) {
+            predicates.add(cb.greaterThanOrEqualTo(user.get("signUpTime"), registrationTime));
+        } else if (registrationTimeTo != null) {
+            predicates.add(cb.lessThanOrEqualTo(user.get("signUpTime"), registrationTimeTo));
+        }
+
 
         cq.where(predicates.toArray(new Predicate[0]));
 
@@ -112,7 +124,24 @@ public class AdminRepositoryImpl implements AdminRepositoryCustom {
         cq.where(predicates.toArray(new Predicate[0]));
 
         return em.createQuery(cq).getResultList();
+    }
 
+    @Override
+    public Expert searchExpertByCountSuggest(Integer desiredCount) {
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<Expert> cq = cb.createQuery(Expert.class);
+        Root<Expert> expertRoot = cq.from(Expert.class);
 
+        Subquery<Long> subquery = cq.subquery(Long.class);
+        Root<WorkSuggestion> workSuggestionRoot = subquery.from(WorkSuggestion.class);
+        Join<WorkSuggestion, Expert> expertJoin = workSuggestionRoot.join("expert");
+
+        subquery.select(cb.count(workSuggestionRoot));
+        subquery.where(cb.equal(expertJoin, expertRoot));
+
+        cq.select(expertRoot);
+        cq.where(cb.equal(subquery, desiredCount));
+
+        return em.createQuery(cq).getSingleResult();
     }
 }

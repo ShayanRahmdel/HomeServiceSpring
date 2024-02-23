@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.*;
 
 @Service
@@ -211,13 +212,21 @@ public class AdminServiceImpl implements AdminService, AdminRepositoryCustom {
     }
 
     @Override
-    public List<User> searchAdminByUser(String name, String lastName, String email, String expertise, Double minRate, Double maxRate) {
-        return adminRepository.searchAdminByUser(name, lastName, email, expertise, minRate, maxRate);
+    public List<User> searchAdminByUser(String firstName, String lastName, String email,
+                                        String expertise, Double minRate, Double maxRate, LocalTime registrationTime,
+                                        LocalTime registerTo) {
+        return adminRepository.searchAdminByUser(firstName, lastName, email, expertise, minRate, maxRate,
+                registrationTime,registerTo);
     }
 
     @Override
     public List<WorkSuggestion> searchWorkSuggestionByName(String firstName, String lastName) {
         return adminRepository.searchWorkSuggestionByName(firstName, lastName);
+    }
+
+    @Override
+    public Expert searchExpertByCountSuggest(Integer desiredCount) {
+        return adminRepository.searchExpertByCountSuggest(desiredCount);
     }
 
     @Override
