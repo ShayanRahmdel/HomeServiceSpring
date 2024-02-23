@@ -5,7 +5,6 @@ import com.shayanr.HomeServiceSpring.exception.NotFoundEmail;
 import com.shayanr.HomeServiceSpring.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
