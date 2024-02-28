@@ -4,6 +4,7 @@ import com.shayanr.HomeServiceSpring.entity.business.CustomerOrder;
 import com.shayanr.HomeServiceSpring.entity.business.WorkSuggestion;
 import com.shayanr.HomeServiceSpring.entity.enumration.OrderStatus;
 
+import com.shayanr.HomeServiceSpring.entity.users.Customer;
 import com.shayanr.HomeServiceSpring.entity.users.Expert;
 import com.shayanr.HomeServiceSpring.entity.users.User;
 
@@ -21,5 +22,10 @@ public interface AdminRepositoryCustom {
     List<CustomerOrder> searchOrders(LocalDate startDate, LocalDate endDate, OrderStatus orderStatus,
                                      String category,String subDuty);
 
-    Expert searchExpertByCountSuggest(Integer desiredCount);
+    List<Expert> searchExpertByCountSuggest(Integer desiredCount);
+
+
+    List<Customer> searchCustomerByCountOrder(Integer desiredCount);
+
+    List<CustomerOrder> seeOrdersByFullName(String firstName,String lastName);
 }
