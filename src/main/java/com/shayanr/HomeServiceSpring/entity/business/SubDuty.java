@@ -36,11 +36,7 @@ public class SubDuty  {
     private Double basePrice;
 
     @ManyToMany
-    @JoinTable(
-            name = "subduty_expert",
-            joinColumns = @JoinColumn(name = "subduty_id"),
-            inverseJoinColumns = @JoinColumn(name = "expert_id")
-    )
+    @JsonIgnore
     private Set<Expert> experts;
 
     @ManyToOne()
