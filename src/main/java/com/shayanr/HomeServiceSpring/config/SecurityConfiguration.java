@@ -1,7 +1,7 @@
 package com.shayanr.HomeServiceSpring.config;
 
 
-import com.shayanr.HomeServiceSpring.exception.NotFoundEmail;
+import com.shayanr.HomeServiceSpring.entity.users.User;
 import com.shayanr.HomeServiceSpring.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,9 +18,9 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
-public class SecurityConfiguration {
+public class SecurityConfiguration<T extends User> {
 
-        private final UserService userService;
+        private final UserService<T> userService;
 
         private final BCryptPasswordEncoder passwordEncoder;
 
@@ -44,10 +44,7 @@ public class SecurityConfiguration {
 
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService((email) -> userService
-                        .findByEmail(email)
-                        .orElseThrow(() -> new NotFoundEmail(String.format("This %s notFound!", email))))
-                .passwordEncoder(passwordEncoder);
+        auth.userDetailsService(userService).passwordEncoder(passwordEncoder);
 
     }
 }
