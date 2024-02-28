@@ -23,9 +23,9 @@ public interface ExpertService {
 
     List<Expert> findAll();
 
-    ResponseEntity<?> signUp(Expert expert);
+    void signUp(Expert expert);
 
-    Expert changePassword(Integer expertId,String newPassword,String confirmPassword);
+    void changePassword(Integer expertId,String newPassword,String confirmPassword);
 
     List<CustomerOrder> seeOrder(Integer expertId);
 
@@ -40,10 +40,6 @@ public interface ExpertService {
     Double seeAmountWallet(Integer expertId);
 
     List<CustomerOrder> seeOrdersByStatus(Integer expertId);
-
-    void sendEmail(String emailAddress);
-
-    ResponseEntity<?> confirmEmail(String confirmationToken);
 
     void deleteAll();
 
