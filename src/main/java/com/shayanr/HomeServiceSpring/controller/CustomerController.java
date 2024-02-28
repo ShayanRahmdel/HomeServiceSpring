@@ -14,6 +14,7 @@ import com.shayanr.HomeServiceSpring.mapper.CustomerMapper;
 import com.shayanr.HomeServiceSpring.mapper.OrderMapper;
 import com.shayanr.HomeServiceSpring.mapper.SuggestionMapper;
 import com.shayanr.HomeServiceSpring.service.CustomerService;
+import com.shayanr.HomeServiceSpring.service.UserService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -41,6 +42,7 @@ public class CustomerController {
     private final CustomerService customerService;
     private final DefaultKaptcha captchaProducer;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final UserService<Customer> userService;
 
     @PostMapping("/register")
     public ResponseEntity<CustomerResponseDto> registerCustomer(@Valid @RequestBody CustomerRequestDto customerRequestDto) {
@@ -51,9 +53,9 @@ public class CustomerController {
         return new ResponseEntity<>(customerResponseDto, HttpStatus.CREATED);
     }
 
-    @PostMapping("/confirm-account")
+    @RequestMapping("/confirm-account")
     public ResponseEntity<?> confirmUserAccount(@RequestParam("token")String confirmationToken) {
-        return customerService.confirmEmail(confirmationToken);
+        return userService.confirmEmail(confirmationToken);
     }
 
     @PutMapping("/change-password/{customerId}")
