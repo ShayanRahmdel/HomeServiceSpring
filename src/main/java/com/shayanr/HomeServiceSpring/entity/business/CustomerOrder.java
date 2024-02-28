@@ -2,7 +2,9 @@ package com.shayanr.HomeServiceSpring.entity.business;
 
 
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.shayanr.HomeServiceSpring.entity.enumration.OrderStatus;
 import com.shayanr.HomeServiceSpring.entity.users.Customer;
 import jakarta.persistence.*;
@@ -22,6 +24,7 @@ import java.util.List;
 @Setter
 @Getter
 @Table(name = "orders")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class CustomerOrder {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -47,7 +50,6 @@ public class CustomerOrder {
     private SubDuty subDuty;
 
     @OneToOne
-    @JsonIgnore
     private Comment comment;
 
 
