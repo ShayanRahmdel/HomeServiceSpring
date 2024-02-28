@@ -35,7 +35,7 @@ public class WorkSuggestion  {
     @JsonIgnore
     private Expert expert;
 
-    @ManyToOne()
+    @ManyToOne
     @JsonIgnore
     private CustomerOrder customerOrder;
 
