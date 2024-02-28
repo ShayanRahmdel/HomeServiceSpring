@@ -9,6 +9,7 @@ import com.shayanr.HomeServiceSpring.mapper.ExpertMapperCustom;
 import com.shayanr.HomeServiceSpring.mapper.OrderMapper;
 import com.shayanr.HomeServiceSpring.mapper.SuggestionMapper;
 import com.shayanr.HomeServiceSpring.service.ExpertService;
+import com.shayanr.HomeServiceSpring.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -30,6 +31,7 @@ public class ExpertController {
     private final ExpertService expertService;
     private final ExpertMapperCustom expertMapperCustom;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final UserService<Expert> userService;
 
     @PostMapping("/register")
     public ResponseEntity<ExpertResponseCustomDto> register(@Valid @ModelAttribute ExpertRequestDto requestDto) throws IOException {
@@ -40,9 +42,9 @@ public class ExpertController {
         return new ResponseEntity<>(expertMapperCustom.modelToResponseCustom(expert),HttpStatus.CREATED);
     }
 
-    @PostMapping("/confirm-account")
+    @RequestMapping("/confirm-account")
     public ResponseEntity<?> confirmUserAccount(@RequestParam("token")String confirmationToken) {
-        return expertService.confirmEmail(confirmationToken);
+        return userService.confirmEmail(confirmationToken);
     }
 
 
@@ -57,6 +59,7 @@ public class ExpertController {
     public List<OrderResponseDto> seeOrders(@PathVariable Integer expertId) {
         List<CustomerOrder> customerOrders = expertService.seeOrder(expertId);
         return OrderMapper.INSTANCE.listModelToResponse(customerOrders);
+
     }
 
     @PostMapping("/create-suggestion/{orderId}/{expertId}")
@@ -83,8 +86,8 @@ public class ExpertController {
     }
 
     @GetMapping("/see-orders-by-status/{expertId}")
-    public List<CustomerOrder> seeOrdesByStatus(@PathVariable Integer expertId){
-        return expertService.seeOrdersByStatus(expertId);
+    public List<OrderResponseDto> seeOrdesByStatus(@PathVariable Integer expertId){
+         return OrderMapper.INSTANCE.listModelToResponse(expertService.seeOrdersByStatus(expertId));
     }
 
 
