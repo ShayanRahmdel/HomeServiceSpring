@@ -2,8 +2,10 @@ package com.shayanr.HomeServiceSpring.entity.users;
 
 
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.shayanr.HomeServiceSpring.entity.business.SubDuty;
-import com.shayanr.HomeServiceSpring.entity.business.Wallet;
 import com.shayanr.HomeServiceSpring.entity.business.WorkSuggestion;
 import com.shayanr.HomeServiceSpring.entity.enumration.Confirmation;
 
@@ -25,6 +27,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Setter
 @Getter
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Expert extends User implements UserDetails {
 
     @Enumerated(EnumType.STRING)
@@ -34,18 +37,14 @@ public class Expert extends User implements UserDetails {
 
     private Double overallScore=0.0;
 
-    private boolean isEnabled;
-
-
-
     @ManyToMany(mappedBy = "experts")
+    @JsonIgnore
     private Set<SubDuty> subDuties;
 
     @OneToMany(mappedBy = "expert")
+    @JsonIgnore
     private List<WorkSuggestion> workSuggestions;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    private Wallet wallet;
     @Override
     public String toString() {
         return  "Epert id " + getId()+"\n"+
