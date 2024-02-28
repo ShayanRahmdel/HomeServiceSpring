@@ -1,9 +1,8 @@
 package com.shayanr.HomeServiceSpring.controller;
 
 
-import com.shayanr.HomeServiceSpring.dto.OrderResponseDto;
-import com.shayanr.HomeServiceSpring.dto.SubDutyDto;
-import com.shayanr.HomeServiceSpring.dto.UserDto;
+import com.shayanr.HomeServiceSpring.dto.*;
+import com.shayanr.HomeServiceSpring.entity.business.CustomerOrder;
 import com.shayanr.HomeServiceSpring.entity.business.DutyCategory;
 import com.shayanr.HomeServiceSpring.entity.business.SubDuty;
 import com.shayanr.HomeServiceSpring.entity.business.WorkSuggestion;
@@ -11,6 +10,8 @@ import com.shayanr.HomeServiceSpring.entity.enumration.OrderStatus;
 import com.shayanr.HomeServiceSpring.entity.users.Customer;
 import com.shayanr.HomeServiceSpring.entity.users.Expert;
 import com.shayanr.HomeServiceSpring.entity.users.User;
+import com.shayanr.HomeServiceSpring.mapper.CustomerMapper;
+import com.shayanr.HomeServiceSpring.mapper.ExpertMapperCustom;
 import com.shayanr.HomeServiceSpring.mapper.OrderMapper;
 import com.shayanr.HomeServiceSpring.mapper.UserMapper;
 import com.shayanr.HomeServiceSpring.service.AdminService;
@@ -31,6 +32,7 @@ public class AdminController {
 
     private final AdminService adminService;
     private final UserMapper userMapper;
+    private final ExpertMapperCustom expertMapperCustom;
 
 
     @PostMapping("/createCategory")
@@ -148,8 +150,18 @@ public class AdminController {
     }
 
     @GetMapping("/search-suggest-by-count")
-    public Expert searchExpertByCount(@RequestParam Integer desiredCount){
-        return adminService.searchExpertByCountSuggest(desiredCount);
+    public List<ExpertResponseDto> searchExpertByCount(@RequestParam Integer desiredCount){
+         return expertMapperCustom.listModelToResponse(adminService.searchExpertByCountSuggest(desiredCount));
+    }
+
+    @GetMapping("/search-customer-by-order-count")
+    public List<CustomerResponseDto> searchCustomersByOrderCount(@RequestParam Integer desiredCount) {
+        return CustomerMapper.INSTANCE.listModelToResponse(adminService.searchCustomerByCountOrder(desiredCount));
+    }
+
+    @GetMapping("/see-orders-by-fullname")
+    public List<OrderResponseDto> seeOrderByFullName(@RequestParam String firstName,@RequestParam String lastName){
+        return OrderMapper.INSTANCE.listModelToResponse(adminService.seeOrdersByFullName(firstName,lastName));
     }
 
 }
