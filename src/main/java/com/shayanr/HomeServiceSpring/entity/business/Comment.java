@@ -2,6 +2,7 @@ package com.shayanr.HomeServiceSpring.entity.business;
 
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.shayanr.HomeServiceSpring.entity.users.Customer;
 import com.shayanr.HomeServiceSpring.exception.ValidationException;
 import jakarta.persistence.*;
@@ -30,7 +31,8 @@ public class Comment {
     @OneToOne(mappedBy = "comment")
     private CustomerOrder customerOrder;
 
-    @ManyToOne()
+    @ManyToOne
+    @JsonIgnore
     private Customer customer;
 
     public void setScore(Integer score) {
