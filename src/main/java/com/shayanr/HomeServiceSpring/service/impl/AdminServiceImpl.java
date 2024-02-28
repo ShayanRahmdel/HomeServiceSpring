@@ -225,8 +225,18 @@ public class AdminServiceImpl implements AdminService, AdminRepositoryCustom {
     }
 
     @Override
-    public Expert searchExpertByCountSuggest(Integer desiredCount) {
+    public List<Expert> searchExpertByCountSuggest(Integer desiredCount) {
         return adminRepository.searchExpertByCountSuggest(desiredCount);
+    }
+
+    @Override
+    public List<Customer> searchCustomerByCountOrder(Integer desiredCount) {
+        return adminRepository.searchCustomerByCountOrder(desiredCount);
+    }
+
+    @Override
+    public List<CustomerOrder> seeOrdersByFullName(String firstName, String lastName) {
+        return adminRepository.seeOrdersByFullName(firstName, lastName);
     }
 
     @Override
