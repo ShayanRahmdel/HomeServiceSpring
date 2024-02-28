@@ -38,7 +38,6 @@ public class Address {
     private Customer customer;
 
     @OneToOne(mappedBy = "address")
-    @JsonIgnore
     private CustomerOrder customerOrder;
 
 
