@@ -20,4 +20,6 @@ public interface ExpertMapperCustom {
 
     ExpertResponseCustomDto modelToResponseCustom(Expert expert);
 
+    List<ExpertResponseCustomDto> listModelToResponseCustom(List<Expert> experts);
+
 }
