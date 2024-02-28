@@ -1,6 +1,7 @@
 package com.shayanr.HomeServiceSpring.entity.business;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -24,6 +25,7 @@ public class DutyCategory  {
     private String title;
 
     @OneToMany(mappedBy = "dutyCategory")
+    @JsonIgnore
     private List<SubDuty> subDuties;
 
 
