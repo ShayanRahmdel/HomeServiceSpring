@@ -54,5 +54,9 @@ public interface AdminService   {
     List<CustomerOrder> searchOrders(LocalDate startDate, LocalDate endDate, OrderStatus orderStatus,
                                      String category, String subDuty);
     List<WorkSuggestion> searchWorkSuggestionByName(String firstName, String lastName);
-    Expert searchExpertByCountSuggest(Integer desiredCount);
+    List<Expert> searchExpertByCountSuggest(Integer desiredCount);
+
+    List<Customer> searchCustomerByCountOrder(Integer desiredCount);
+
+    List<CustomerOrder> seeOrdersByFullName(String firstName,String lastName);
 }
