@@ -1,6 +1,7 @@
 package com.shayanr.HomeServiceSpring.entity.users;
 
 
+import com.shayanr.HomeServiceSpring.entity.business.Wallet;
 import com.shayanr.HomeServiceSpring.entity.enumration.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -49,6 +50,11 @@ public class User implements UserDetails {
 
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    private boolean isEnabled;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    private Wallet wallet;
 
 
     @Override
