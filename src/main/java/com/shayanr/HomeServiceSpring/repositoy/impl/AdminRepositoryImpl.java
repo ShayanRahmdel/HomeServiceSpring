@@ -127,21 +127,47 @@ public class AdminRepositoryImpl implements AdminRepositoryCustom {
     }
 
     @Override
-    public Expert searchExpertByCountSuggest(Integer desiredCount) {
+    public List<Expert> searchExpertByCountSuggest(Integer desiredCount) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Expert> cq = cb.createQuery(Expert.class);
         Root<Expert> expertRoot = cq.from(Expert.class);
 
-        Subquery<Long> subquery = cq.subquery(Long.class);
-        Root<WorkSuggestion> workSuggestionRoot = subquery.from(WorkSuggestion.class);
-        Join<WorkSuggestion, Expert> expertJoin = workSuggestionRoot.join("expert");
-
-        subquery.select(cb.count(workSuggestionRoot));
-        subquery.where(cb.equal(expertJoin, expertRoot));
-
+        Join<Expert, WorkSuggestion> workSuggestionJoin = expertRoot.join("workSuggestions", JoinType.LEFT);
         cq.select(expertRoot);
-        cq.where(cb.equal(subquery, desiredCount));
+        cq.groupBy(expertRoot.get("id"));
+        cq.having(cb.equal(cb.count(workSuggestionJoin), desiredCount));
 
-        return em.createQuery(cq).getSingleResult();
+        return em.createQuery(cq).getResultList();
+    }
+
+    @Override
+    public List<Customer> searchCustomerByCountOrder(Integer desiredCount) {
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<Customer> cq = cb.createQuery(Customer.class);
+        Root<Customer> customerRoot = cq.from(Customer.class);
+
+        Join<Customer, CustomerOrder> customerOrderJoin = customerRoot.join("customerOrders", JoinType.LEFT);
+        cq.select(customerRoot);
+        cq.groupBy(customerRoot.get("id"));
+        cq.having(cb.equal(cb.count(customerOrderJoin), desiredCount));
+
+        return em.createQuery(cq).getResultList();
+    }
+
+    @Override
+    public List<CustomerOrder> seeOrdersByFullName(String firstName, String lastName) {
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<CustomerOrder> cq = cb.createQuery(CustomerOrder.class);
+        Root<CustomerOrder> customerOrderRoot = cq.from(CustomerOrder.class);
+
+        Join<CustomerOrder, Customer> customerJoin = customerOrderRoot.join("customer");
+
+
+        cq.where(
+                cb.equal(customerJoin.get("firstName"), firstName),
+                cb.equal(customerJoin.get("lastName"), lastName)
+        );
+
+        return em.createQuery(cq).getResultList();
     }
 }
